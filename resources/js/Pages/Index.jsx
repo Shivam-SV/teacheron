@@ -1,7 +1,10 @@
+import HeroSection from "../Components/Home/HeroSection";
+import Layout from "../Layouts/AppLayout";
+
 export default function Index(){
     return (
-        <>
-            <h1>Hey from Inertia</h1>
-        </>
+        <Layout>
+            <HeroSection />
+        </Layout>
     );
 }
