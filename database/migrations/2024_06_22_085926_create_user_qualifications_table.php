@@ -11,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_login_logs', function (Blueprint $table) {
+        Schema::create('user_qualifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
-            $table->timestamp('login_at')->useCurrent();
-            $table->string('device_IP', 50)->nullable();
-            $table->string('system_info', 300)->nullable();
+            $table->string('name', 70);
+            $table->date('started_at')->nullable();
+            $table->date('ended_at')->nullable();
+            $table->string('institute_name', 100)->nullable();
+            $table->integer('obtained_score')->nullable();
+            $table->integer('max_score')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_login_logs');
+        Schema::dropIfExists('user_qualifications');
     }
 };

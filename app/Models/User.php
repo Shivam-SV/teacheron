@@ -67,4 +67,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(User::class, 'verified_by');
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'user_have_subjects')
+            ->withPivot('level_from_id', 'level_to_id')
+            ->using(UserHaveSubject::class)
+            ->withTimestamps();
+    }
 }
