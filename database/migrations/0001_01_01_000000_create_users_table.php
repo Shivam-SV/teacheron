@@ -13,10 +13,24 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->string('first_name', 50)->nullable();
+            $table->string('last_name', 50)->nullable();
+            $table->string('user_name', 50)->nullable();
+            $table->string('email', 100)->unique();
+            $table->text('alternate_emails')->nullable()->comment('JSON column');
+            $table->text('alternate_phone')->nullable()->comment('JSON column');
+            $table->text('languages_known')->nullable()->comment('JSON column');
+            $table->string('password', 255)->nullable();
+            $table->text('google_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->enum('gender', ['male', 'female', 'not specified'])->default('not specified');
+            $table->date('date_of_birth')->nullable();
+            $table->enum('status', ['deactive', 'active', 'suspended', 'banned'])->default('active');
+            $table->dateTime('status_updated_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
+            $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->boolean('have_password')->default(1)->comment('0 for social login, guest, 1 for general web login');
+            $table->enum('user_login_type', ['web', 'social', 'guest'])->default('web');
             $table->rememberToken();
             $table->timestamps();
         });
