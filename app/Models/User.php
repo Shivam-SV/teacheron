@@ -74,4 +74,12 @@ class User extends Authenticatable
     public function profile(){
         return $this->belongsTo(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'user_have_subjects')
+            ->withPivot('level_from_id', 'level_to_id')
+            ->using(UserHaveSubject::class)
+            ->withTimestamps();
+    }
 }
