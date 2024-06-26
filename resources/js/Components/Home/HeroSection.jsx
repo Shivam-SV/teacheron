@@ -7,15 +7,15 @@ export default function HeroSection(){
                     <div className="card-body">
                         <div className="grid grid-cols-12 gap-4">
                             <div className="form-control md:col-span-5 sm:col-span-6 col-span-12">
-                                <label class="input input-bordered flex items-center gap-2">
-                                    <i class='bx bx-briefcase text-lg' ></i>
-                                    <input type="text" class="grow" placeholder="Job title" />
+                                <label className="input input-bordered flex items-center gap-2">
+                                    <i className='bx bx-briefcase text-lg' ></i>
+                                    <input type="text" className="grow" placeholder="Job title" />
                                 </label>
                             </div>
                             <div className="form-control md:col-span-5 sm:col-span-6 col-span-12">
-                                <label class="input input-bordered flex items-center gap-2">
-                                <i class='bx bx-current-location text-lg'></i>
-                                    <input type="text" class="grow" placeholder="location" />
+                                <label className="input input-bordered flex items-center gap-2">
+                                <i className='bx bx-current-location text-lg'></i>
+                                    <input type="text" className="grow" placeholder="location" />
                                 </label>
                             </div>
                             <div className="md:col-span-2 col-span-12">

@@ -11,8 +11,13 @@ class UserLoginLog extends Model
 
     protected $fillable = ['user_id', 'login_at', 'device_IP', 'system_info'];
 
-    public function user()
-    {
+    protected function casts(){
+        return [
+            'login_at' => 'datetime',
+        ];
+    }
+
+    public function user(){
         return $this->belongsTo(User::class);
     }
 }

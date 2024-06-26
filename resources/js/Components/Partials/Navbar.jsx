@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react";
 
-export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
+export default function Navbar({sidebarIsOpen, setSidebarIsOpen, auth}){
     return (
         <header className="w-full p-2 bg-white/15 backdrop-blur-lg shadow py-5 tracking-wide">
             <nav className="container mx-auto">
@@ -48,8 +48,25 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
                         </ul>
                     </div>
                     <div className="flex items-center gap-2">
-                        <a href="#" className="btn btn-ghost">Register now</a>
-                        <a href="#" className="btn btn-primary">Sign up</a>
+                        {
+                            auth ?
+                            <>
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} role="button" className="btn m-1 group transition-all duration-150 ease-in-out">
+                                        <i className="bx bx-user text-xl"></i>
+                                        <span>{auth.name}</span>
+                                    </div>
+                                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                                        <li><a><i className="bx bx-user text-xl"></i> Profile</a></li>
+                                        <li><a><i className='bx bx-log-out text-xl' ></i> Logout</a></li>
+                                    </ul>
+                                </div>
+                            </> :
+                            <>
+                                <Link href="/sign-in" className="btn btn-ghost hidden md:inline-flex">Register</Link>
+                                <Link href="/login" className="btn btn-primary">Sign up</Link>
+                            </>
+                        }
                         <button className="btn btn-ghost md:hidden" onClick={() => setSidebarIsOpen(true)}><i className="bx bx-menu text-2xl"></i></button>
                     </div>
                 </div>

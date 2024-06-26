@@ -3,7 +3,7 @@ export default function Sidebar({sidebarIsOpen, setSidebarIsOpen}){
         <aside className={"bg-white shadow-md w-[380px] h-screen fixed top-0 right-0 z-20 transition-all ease-in-out duration-300" + (!sidebarIsOpen ? ' opacity-0 invisible' : '')}>
             <div className="p-6 flex items-center gap-2">
                 <label className="input flex items-center gap-2 bg-base-200 grow">
-                    <i class='bx bx-search-alt text-lg'></i>
+                    <i className='bx bx-search-alt text-lg'></i>
                     <input type="search" className="grow" name="search" id="appSearch" placeholder="Search" />
                 </label>
                 <button className="btn btn-ghost" onClick={() => setSidebarIsOpen(false)}><i className="bx bx-x text-xl"></i></button>

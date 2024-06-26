@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name', 50)->nullable();
-            $table->string('last_name', 50)->nullable();
-            $table->string('user_name', 50)->nullable();
+            $table->string('name')->nullable();
             $table->string('email', 100)->unique();
             $table->text('alternate_emails')->nullable()->comment('JSON column');
             $table->text('alternate_phone')->nullable()->comment('JSON column');

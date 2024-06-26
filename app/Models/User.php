@@ -3,9 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Support\Arr;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -17,7 +20,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'first_name', 'last_name', 'user_name', 'email', 'alternate_emails',
+        'name', 'email', 'alternate_emails',
         'alternate_phone', 'languages_known', 'google_id',
         'email_verified_at', 'gender', 'date_of_birth', 'status',
         'status_updated_at', 'verified_at', 'verified_by', 'have_password',
@@ -66,5 +69,9 @@ class User extends Authenticatable
     public function verifiedBy()
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    public function profile(){
+        return $this->belongsTo(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
     }
 }
