@@ -16,18 +16,20 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Facades\Socialite;
 
-trait HasUserAuthentications{
+trait HasUserAuthentications
+{
 
     # Logs in User locally
-    public function login(Request $request): null|\Illuminate\Http\RedirectResponse{
+    public function login(Request $request): null|\Illuminate\Http\RedirectResponse
+    {
         # Validating Request
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'email' => 'required|exists:users,email',
             'password' => 'required|min:7'
         ]);
 
         # Authenticating and logging if authenticated
-        if(Auth::attempt($request->only('email', 'password'))){
+        if (Auth::attempt($request->only('email', 'password'))) {
             UserLoginLog::create([
                 'user_id' => auth()->id(),
                 'login_at' => now(),
@@ -46,7 +48,8 @@ trait HasUserAuthentications{
      * It redirects the system to the google Oauth API
      * and shows the google authentication screen
      */
-    public function redirectToGoogle(){
+    public function redirectToGoogle()
+    {
         return Socialite::driver('google')->redirect();
     }
 
@@ -55,23 +58,24 @@ trait HasUserAuthentications{
      * Register the user if he/she is new for us
      * and logs him in
      */
-    public function authenticateGoogleUser(Request $request){
+    public function authenticateGoogleUser(Request $request)
+    {
         # getting google's user data
         $googleUser = Socialite::driver('google')->stateless()->user();
         $user = User::where('email', $googleUser->email)->first();
         # storing the user if not registered
-        if(!$user){
+        if (!$user) {
             $user = User::create([
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
             ]);
-            if($googleUser->avatar){
+            if ($googleUser->avatar) {
                 Media::create([
                     'model_id' => $user->id,
                     'model_name' => (new User)->getTable(),
                     'model_column' => 'profile',
                     'file_path' => $googleUser->avatar,
-                    'file_name' => Str::snake($googleUser->name) .'Profile',
+                    'file_name' => Str::snake($googleUser->name) . 'Profile',
                     'source' => 'web'
                 ]);
             }
@@ -90,7 +94,8 @@ trait HasUserAuthentications{
     }
 
     # register a new user
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         # validating the user request
         $request->validate([
             'name' => 'required|string|max:70',
@@ -110,11 +115,12 @@ trait HasUserAuthentications{
     }
 
     # sending a verification email to the newly register user
-    public function sendVerificationEmail($userId){
+    public function sendVerificationEmail($userId)
+    {
         $user = User::findOrFail(decrypt($userId));
 
         # if already verified redirect him to login page
-        if($user->email_verified_at != null){
+        if ($user->email_verified_at != null) {
             Session()->flash('info', 'Email Already verified');
             return to_route('login');
         }
@@ -124,11 +130,12 @@ trait HasUserAuthentications{
     }
 
     # verifying the users email
-    public function verifyEmail($userId){
+    public function verifyEmail($userId)
+    {
         $user = User::findOrFail(decrypt($userId));
 
         # if already verified then show a message about it.
-        if($user->email_verified_at != null) session()->flash('info', 'Email Already verified');
+        if ($user->email_verified_at != null) session()->flash('info', 'Email Already verified');
         else {
             $user->update(['email_verified_at' => now()]);
             session()->flash('success', 'Email has been verified');
