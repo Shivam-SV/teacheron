@@ -22,8 +22,8 @@ return new class extends Migration
             $table->foreignId('level_id')->nullable()->constrained('levels')->onUpdate('cascade')->onDelete('set null');
             $table->enum('gender_preference', ['male', 'female', 'any'])->default('any');
             $table->enum('status', ['open', 'on-hold', 'fulfilled', 'cancel'])->default('open');
-            $table->unsignedDecimal('min_budget', 7, 2)->default(0);
-            $table->unsignedDecimal('max_budget', 7, 2)->default(0);
+            $table->decimal('min_budget', 7, 2)->default(0);
+            $table->decimal('max_budget', 7, 2)->default(0);
             $table->string('budget_currency_code', 10)->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -15,14 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->enum('duration_period', ['hourly', 'daily', 'monthly', 'quaterly', 'yearly']);
-            $table->unsignedDecimal('min_price', 10, 2)->nullable();
-            $table->unsignedDecimal('max_price', 10, 2)->nullable();
+            $table->decimal('min_price', 10, 2)->nullable();
+            $table->decimal('max_price', 10, 2)->nullable();
             $table->text('prive_varing_description')->nullable();
             $table->decimal('total_experience', 3, 1)->default(0);
             $table->decimal('online_experience', 3, 1)->default(0);
             $table->decimal('offline_experience', 3, 1)->default(0);
             $table->boolean('can_travel')->default(0);
-            $table->unsignedDecimal('travel_kms', 7, 2)->default(0);
+            $table->decimal('travel_kms', 7, 2)->default(0);
             $table->boolean('can_teach_online')->default(0);
             $table->boolean('have_digital_pen')->default(0);
             $table->boolean('can_help_with_homework')->default(0);
