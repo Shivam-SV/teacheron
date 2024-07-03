@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Media;
+use Illuminate\Support\Str;
 use App\Models\UserHaveRole;
 use App\Models\UserLoginLog;
 use Illuminate\Http\Request;
@@ -65,7 +66,14 @@ trait HasUserAuthentications{
                 'email' => $googleUser->email,
             ]);
             if($googleUser->avatar){
-                Media::StoreMedia(User::class, $user->id, 'profile', $googleUser->avatar);
+                Media::create([
+                    'model_id' => $user->id,
+                    'model_name' => (new User)->getTable(),
+                    'model_column' => 'profile',
+                    'file_path' => $googleUser->avatar,
+                    'file_name' => Str::snake($googleUser->name) .'Profile',
+                    'source' => 'web'
+                ]);
             }
         }
         # logging in and recording a log

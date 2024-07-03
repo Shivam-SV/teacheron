@@ -21,12 +21,10 @@ class Media extends Model
         'file_mime'
     ];
 
-    public static function StoreMedia(string $model, int $id, string $columnName, string|object $media){
-        self::create([
-            'model_id' => $id,
-            'model_name' => $model::getTable(),
-            'model_column' => $columnName,
-            'file_path' => $media
-        ]);
+    protected $appends = ['mediaLink'];
+
+    protected function getMediaLinkAttribute(){
+        return $this->file_path;
     }
+
 }

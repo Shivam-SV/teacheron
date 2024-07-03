@@ -53,11 +53,11 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen, auth}){
                             <>
                                 <div className="dropdown dropdown-end">
                                     <div tabIndex={0} role="button" className="btn m-1 group transition-all duration-150 ease-in-out">
-                                        <i className="bx bx-user text-xl"></i>
+                                        { auth?.profile?.mediaLink ? <img src={auth?.profile?.mediaLink} className="w-[25px] h-[25px] rounded-full" /> : <i className="bx bx-user text-xl"></i> }
                                         <span>{auth.name}</span>
                                     </div>
                                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                        <li><a><i className="bx bx-user text-xl"></i> Profile</a></li>
+                                        <li><Link href="/profile"><i className="bx bx-user text-xl"></i> Profile</Link></li>
                                         <li><a><i className='bx bx-log-out text-xl' ></i> Logout</a></li>
                                     </ul>
                                 </div>

@@ -37,6 +37,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $with = ['profile'];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -72,7 +74,7 @@ class User extends Authenticatable
     }
 
     public function profile(){
-        return $this->belongsTo(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
+        return $this->hasOne(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
     }
 
     public function subjects()

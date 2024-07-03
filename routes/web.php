@@ -5,7 +5,6 @@ use App\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 
-
 # frontend routes
 Route::inertia('/', 'index')->name('home');
 Route::inertia('/login', 'Auth/Login')->name('login');
@@ -15,8 +14,14 @@ Route::get('/sign-in', function(){
     ]);
 });
 
+Route::get('/profile/{userId?}', [UserController::class, 'Profile']);
 
-# backend routes
+
+/**
+ * Backend Routes
+ */
+
+# Authentication Routes
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/register', [UserController::class, 'register']);
 Route::get('send-verification-email/{userId}', [UserController::class, 'sendVerificationEmail'])->name('send-verification-email');
