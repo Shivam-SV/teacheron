@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Route;
 # Frontend Routes
 # --------------
 
-Route::inertia('/', 'index')->name('home');
+Route::inertia('/', 'Index')->name('home');
 Route::inertia('/login', 'Auth/Login')->name('login');
-Route::get('/sign-in', function(){
+Route::get('/sign-in', function () {
     return Inertia::render('Auth/Register', [
         'roles' => Role::get()
     ]);
@@ -44,11 +44,11 @@ Route::get('/google/authenticateUser', [UserController::class, 'authenticateGoog
  * ------------------------------------------------------------------------------------------
  */
 
-Route::prefix('supadmin')->as('supadmin.')->group(function(){
+Route::prefix('supadmin')->as('supadmin.')->group(function () {
     Route::inertia('/login', 'Admin/Auth/Login')->name('login');
     Route::post('login', [AdminController::class, 'login'])->name('login');
 
-    Route::middleware('auth')->group(function(){
+    Route::middleware('auth')->group(function () {
         Route::inertia('/', 'Admin/Home')->name('home');
     });
 });

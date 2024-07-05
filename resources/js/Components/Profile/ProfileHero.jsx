@@ -9,8 +9,8 @@ export default function ProfileHero({ user }) {
                     <img src={user?.profile?.mediaLink ?? `https://placehold.co/100x100?text=${user.name}`} alt="profile" className="-mt-14 ml-10 shadow-md rounded-full border-4 border-white w-40 h-40 mr-4" />
                     <div className="p-2 px-4 grow">
                         <h2 className="text-3xl font-bold mb-2">{user.name}</h2>
-                        <p className="mb-4">{user.roles?.join(', ') ?? <em>No specification</em>}</p>
-                        <p className="bg-gray-200 inline-block rounded-md py-1 px-2 mb-2">San Fransico, United Nations</p>
+                        <p className="mb-4">{user.roles?.map(r => r.name.ucfirst()).join(', ') ?? <em>No specification</em>}</p>
+                        <span className="bg-primary-content text-primary inline rounded-md py-1 px-2 mb-2">San Fransico, United Nations</span>
                     </div>
                     <div className="p-6">
                         <button className="btn btn-outline btn-sm btn-primary"><i class='bx bx-edit-alt'></i> Edit profile</button>

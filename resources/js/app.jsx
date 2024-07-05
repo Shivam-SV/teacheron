@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import 'animate.css';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
+import "./Helpers/prototypeHelpers.js";
 
 createInertiaApp({
   resolve: name => {
@@ -12,17 +13,17 @@ createInertiaApp({
   },
   setup({ el, App, props }) {
     createRoot(el).render(
+      <>
         <>
-            <>
-                <App {...props} />
-                <ToastContainer
-                    position="bottom-center"
-                    autoClose="5000"
-                    closeOnClick="true"
-                    newestOnTop="true"
-                />
-            </>
+          <App {...props} />
+          <ToastContainer
+            position="bottom-center"
+            autoClose="5000"
+            closeOnClick="true"
+            newestOnTop="true"
+          />
         </>
+      </>
     )
   },
 })

@@ -15,7 +15,7 @@
         @vite(['resources/js/app.jsx', 'resources/css/app.css'])
         @inertiaHead
     </head>
-    <body class="antialiased">
+    <body class="antialiased" data-theme=cupcake>
         @inertia
     </body>
 </html>
