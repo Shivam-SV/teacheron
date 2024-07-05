@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\HasRoles;
 use Illuminate\Support\Arr;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -12,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -37,7 +38,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $with = ['profile'];
+    protected $with = ['profile', 'roles'];
 
     /**
      * Get the attributes that should be cast.
@@ -56,11 +57,6 @@ class User extends Authenticatable
             'verified_at' => 'datetime',
             'date_of_birth' => 'date'
         ];
-    }
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'user_have_roles');
     }
 
     public function loginLogs()

@@ -1,18 +1,17 @@
 import Navbar from "../Components/Partials/Navbar";
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import Sidebar from "../Components/Partials/Sidebar";
-import { GlobalPropsContext } from "../Contexts/AppContext";
+import BaseLayout from "./BaseLayout";
 
 export default function Layout({children}){
     const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-    const AppProps = useContext(GlobalPropsContext);
     return (
-        <>
-            <Navbar sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} auth={AppProps.props?.auth} />
+        <BaseLayout>
+            <Navbar sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
             <main>
                 <Sidebar sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
                 {children}
             </main>
-        </>
+        </BaseLayout>
     )
 }

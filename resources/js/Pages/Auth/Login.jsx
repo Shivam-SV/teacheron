@@ -1,5 +1,4 @@
 import LoginCard from "../../Components/Auth/LoginCard";
-import toastFlasher from "../../Helpers/appHelper";
 import Layout from "../../Layouts/AppLayout";
 
 export default function Login(){

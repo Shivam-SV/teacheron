@@ -21,10 +21,15 @@ trait HasUserAuthentications{
     # Logs in User locally
     public function login(Request $request): null|\Illuminate\Http\RedirectResponse{
         # Validating Request
-        $request->validate([
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:7'
-        ]);
+        $request->validate(array_merge(
+            ['email' => 'required|email|exists:users,email','password' => 'required|min:7'],
+            $this->admin ? ['role' => 'in:admin'] : []
+        ));
+
+        if($this->admin && (($user = User::where('email', $request->email)->first()) && !$user->is('admin'))){
+            Session::flash('warning', 'Sorry! Your are not a admin');
+            return back();
+        }
 
         # Authenticating and logging if authenticated
         if(Auth::attempt($request->only('email', 'password'))){
@@ -35,7 +40,7 @@ trait HasUserAuthentications{
                 'system_info' => $_SERVER['HTTP_USER_AGENT']
             ]);
 
-            return to_route('home');
+            return $this->admin ? to_route('supadmin.home') : to_route('home');
         }
 
         # Sending error message
@@ -135,5 +140,10 @@ trait HasUserAuthentications{
         }
 
         return to_route('login');
+    }
+
+    public function logout(){
+        auth()->logout();
+        to_route('home');
     }
 }

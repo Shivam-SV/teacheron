@@ -4,7 +4,6 @@ import { createRoot } from 'react-dom/client'
 import 'animate.css';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
-import { GlobalProps } from './Contexts/AppContext';
 
 createInertiaApp({
   resolve: name => {
@@ -14,7 +13,7 @@ createInertiaApp({
   setup({ el, App, props }) {
     createRoot(el).render(
         <>
-            <GlobalProps appProps={props.initialPage.props}>
+            <>
                 <App {...props} />
                 <ToastContainer
                     position="bottom-center"
@@ -22,7 +21,7 @@ createInertiaApp({
                     closeOnClick="true"
                     newestOnTop="true"
                 />
-            </GlobalProps>
+            </>
         </>
     )
   },

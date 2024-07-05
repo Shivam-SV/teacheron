@@ -1,6 +1,7 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
-export default function Navbar({sidebarIsOpen, setSidebarIsOpen, auth}){
+export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
+    const {auth} = usePage().props;
     return (
         <header className="w-full p-2 bg-white/15 backdrop-blur-lg shadow py-5 tracking-wide">
             <nav className="container mx-auto">
@@ -58,7 +59,7 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen, auth}){
                                     </div>
                                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                         <li><Link href="/profile"><i className="bx bx-user text-xl"></i> Profile</Link></li>
-                                        <li><a><i className='bx bx-log-out text-xl' ></i> Logout</a></li>
+                                        <li><Link method="post" href="/logout" ><i className='bx bx-log-out text-xl' ></i> Logout</Link></li>
                                     </ul>
                                 </div>
                             </> :
