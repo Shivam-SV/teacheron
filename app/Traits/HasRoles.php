@@ -11,6 +11,6 @@ trait HasRoles{
     }
 
     public function is($roleName){
-        return $this->roles->where('name', $roleName)->isNotEmpty();
+        return $this->roles->where('name', 'LIKE', $roleName)->isNotEmpty();
     }
 }
