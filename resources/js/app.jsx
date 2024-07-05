@@ -4,8 +4,11 @@ import { createRoot } from 'react-dom/client'
 import 'animate.css';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
+import 'react-tabulator/lib/styles.css';
+import 'react-tabulator/css/materialize/tabulator_materialize.min.css';
 
 createInertiaApp({
+    title: title => `${title} - TeacherOn`,
   resolve: name => {
     const pages = import.meta.glob('./Pages/**/*.jsx', { eager: true })
     return pages[`./Pages/${name}.jsx`]

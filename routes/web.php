@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Models\Role;
 use Inertia\Inertia;
@@ -50,5 +51,6 @@ Route::prefix('supadmin')->as('supadmin.')->group(function(){
 
     Route::middleware('auth')->group(function(){
         Route::inertia('/', 'Admin/Home')->name('home');
+        Route::get('/subjects', [SubjectController::class, 'index']);
     });
 });

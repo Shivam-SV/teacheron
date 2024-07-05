@@ -22,4 +22,11 @@ class Subject extends Model
         return $this->belongsToMany(User::class, 'user_have_subjects')
             ->withPivot('level_from_id', 'level_to_id');
     }
+
+    public static function TabulatorColumns(){
+        return [
+            ["title" => 'Name', 'field' => 'name', 'headerFilter' => true],
+            ["title" => 'Meta', 'field' => 'meta', 'headerFilter' => true]
+        ];
+    }
 }
