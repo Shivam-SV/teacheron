@@ -26,7 +26,7 @@ export default function login(){
                                 {errors.password && <span className="text-error">{errors.password}</span>}
                             </div>
                         </div>
-                        <button className="btn btn-primary text-lg w-full">Login</button>
+                        <button className="btn btn-primary text-lg w-full" disabled={processing}>{processing && <i className='bx bx-loader-alt bx-spin' ></i>} Login</button>
                     </form>
                 </div>
             </div>

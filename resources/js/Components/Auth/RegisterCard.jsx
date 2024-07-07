@@ -1,5 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import { useState } from "react";
+import { formHandler } from "../../Helpers/appHelper";
 
 export default function RegisterCard({roles}) {
     const { data, setData, post, processing, errors } = useForm({
@@ -10,10 +11,6 @@ export default function RegisterCard({roles}) {
     });
     const [togglePassword, setTogglePassword] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        post('/register');
-    }
     return (
         <div className="flex items-center justify-center">
             <div
@@ -27,7 +24,7 @@ export default function RegisterCard({roles}) {
                     </p>
                 </div>
                 <div className="card-body">
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={formHandler(post)} action="/register">
                         <div className="mb-4">
                             <div className="form-control mb-2">
                                 <label htmlFor="name">Name</label>
@@ -101,8 +98,8 @@ export default function RegisterCard({roles}) {
                             </div>
                         </div>
                         <div className="flex justify-between items-center">
-                            <button className="btn btn-primary">
-                                <i className="bx bx-lock"></i> Sign in
+                            <button className="btn btn-primary" disabled={processing}>
+                            {processing && <i className='bx bx-loader-alt bx-spin' ></i>} <i className="bx bx-lock"></i> Sign in
                             </button>
                             <div
                                 className="tooltip"

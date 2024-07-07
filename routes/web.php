@@ -51,6 +51,11 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::inertia('/', 'Admin/Home')->name('home');
+
+        // subject
         Route::get('/subjects', [SubjectController::class, 'index']);
+        Route::post('/subject/store', [SubjectController::class, 'store']);
+        Route::put('/subject/{subjectId}/update', [SubjectController::class, 'update']);
+        Route::delete("/subject/{subjectId}/delete", [SubjectController::class, 'delete']);
     });
 });
