@@ -6,25 +6,30 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Traits\HaveGrid;
 use Illuminate\Support\Facades\Session;
 
 class SubjectController extends Controller{
+    use HaveGrid;
+
+    protected $model = Subject::class;
 
     public function index(){
         if(!request()->inertia() && request()->expectsJson()){
-            return Subject::get();
+            return $this->getQueryData();
         }
 
         return inertia('Admin/Subject/Index', [
-            'columns' => Subject::GridColumns()
+            'columns' => $this->getColumns(),
+            ... $this->defaultViewData()
         ]);
     }
 
     public function store(Request $request){
         $request->validate([
-            'name' => 'required|max:50|regex:/^[\w\-\s]+$/',
+            'name' => 'required|max:50',
             'meta' => 'nullable|max:255',
-            'created_by_user_id' => 'required'
+            'created_by_user_id' => 'required|exists:users,id'
         ]);
 
         try{
@@ -51,13 +56,19 @@ class SubjectController extends Controller{
         }
     }
 
-    public function delete($subjectId){
+    public function destroy($subjectId){
         try{
             Subject::findOrFail($subjectId)?->delete();
             Session::flash('success', "Subject has been removed");
         }catch(\Throwable $th){
             Log::error("Fail to delete the subject (id: {$subjectId}) due to: {$th->getMessage()}");
-            Session::flash('error', "Oops! we faced something wrong while updating the subject! Reverted the data back");
+            Session::flash('error', "Oops! we faced something wrong while removing the subject! Reverted the data back");
         }
+    }
+
+    # Accessable outside from admin panel
+
+    public function getSubjects(Request $request){
+        return $this->model::get();
     }
 }

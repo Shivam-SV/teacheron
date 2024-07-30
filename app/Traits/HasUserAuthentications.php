@@ -67,12 +67,17 @@ trait HasUserAuthentications
     {
         # getting google's user data
         $googleUser = Socialite::driver('google')->stateless()->user();
-        $user = User::where('email', $googleUser->email)->first();
+        $user = User::where('email', "LIKE", "%$googleUser->email%")->first();
         # storing the user if not registered
         if (!$user) {
             $user = User::create([
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
+                'email_verified_at' => now(),
+                'status' => 'active',
+                'status_updated_at' => now(),
+                'have_password' => 0,
+                'user_login_type' => 'social'
             ]);
             if ($googleUser->avatar) {
                 Media::create([

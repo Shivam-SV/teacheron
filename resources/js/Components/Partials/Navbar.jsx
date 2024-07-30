@@ -52,6 +52,7 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
                         {
                             auth ?
                             <>
+                                {auth?.roles[0]?.name === 'student' && <Link href="/new-post" className="btn btn-primary btn-outline"><i className="bx bx-plus text-lg"></i> Post</Link> }
                                 <div className="dropdown dropdown-end">
                                     <div tabIndex={0} role="button" className="btn m-1 group transition-all duration-150 ease-in-out">
                                         { auth?.profile?.mediaLink ? <img src={auth?.profile?.mediaLink} className="w-[25px] h-[25px] rounded-full" /> : <i className="bx bx-user text-xl"></i> }
@@ -59,7 +60,7 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
                                     </div>
                                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                         <li><Link href="/profile"><i className="bx bx-user text-xl"></i> Profile</Link></li>
-                                        <li><Link method="post" href="/logout" ><i className='bx bx-log-out text-xl' ></i> Logout</Link></li>
+                                        <li><Link method="post" href="/logout" as="button" ><i className='bx bx-log-out text-xl' ></i> Logout</Link></li>
                                     </ul>
                                 </div>
                             </> :

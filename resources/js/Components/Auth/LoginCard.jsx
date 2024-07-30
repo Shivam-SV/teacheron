@@ -1,5 +1,6 @@
 import { Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
+import { formHandler } from "../../Helpers/appHelper";
 
 export default function LoginCard() {
     const { data, setData, post, processing, errors } = useForm({

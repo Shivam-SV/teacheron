@@ -28,9 +28,15 @@ export default function SideBar(){
                     <h2 className="menu-title">General</h2>
                     <ul>
                         <li>
-                            <Link href="/supadmin/subjects" className="text-base">
+                            <Link href={route('supadmin.subject.index')} className="text-base">
                                 <i className='bx bx-captions text-lg align-middle'></i>
                                 <span className="grow">Subjects</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href={route('supadmin.level.index')} className="text-base">
+                                <i className='bx bx-signal-5 text-lg align-middle'></i>
+                                <span className="grow">Levels</span>
                             </Link>
                         </li>
                     </ul>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\LevelExperties;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
         Schema::create('levels', function (Blueprint $table) {
             $table->id();
             $table->string('level_name', 50);
-            $table->enum('experties_as', ['beginner', 'intermediate', 'expert', 'professional'])->default('beginner');
+            $table->enum('experties_as', array_column(LevelExperties::cases(), 'value'))->default('beginner');
             $table->foreignId('created_by_user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });

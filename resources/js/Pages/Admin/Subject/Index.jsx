@@ -1,7 +1,6 @@
 import Layout from "../../../Layouts/AdminLayout";
 import { useRef, useState } from "react";
 import Grid from "../../../Components/Partials/Grid";
-import { appendActionColumn, defaultActionButtons, rowsFetcher } from "../../../Helpers/gridHelper";
 import { formHandler } from "../../../Helpers/appHelper";
 import { router, useForm } from "@inertiajs/react";
 import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
@@ -17,18 +16,9 @@ export default function Subjects({columns, auth}){
     const DeleteRef = useRef(null);
     const [deletableRowId, setDeletableRowId] = useState(null);
 
-    const {processing, post, put, data, setData, errors} = useForm(defaultFormValues);
+    const {processing, post, put, data, setData, errors, reset} = useForm(defaultFormValues);
     const [isEditing, setIsEditing] = useState(false);
-    columns = appendActionColumn(columns);
-
-    const {reload, rows} = rowsFetcher({
-        url: location.href,
-        onRowsFetched(r){
-            r.actions = defaultActionButtons(r, onRowEdit, onRowDelete);
-            return r;
-        }
-    })
-
+    const [isHydrated, setIsHydrated] = useState(false);
 
     const onRowEdit = (event, row) => {
         setData({
@@ -46,29 +36,33 @@ export default function Subjects({columns, auth}){
     }
 
     const deleteSubject = () => {
-        router.delete(`/supadmin/subject/${deletableRowId}/delete`, {
+        router.delete(route('supadmin.subject.destroy', deletableRowId), {
             onFinish(){
                 DeleteRef.current.close();
-                reload()
+                setIsHydrated(true)
             }
         });
     }
 
     const onSuccess = () => {
         modelRef.current.close();
-        setData(defaultFormValues);
-        reload();
+        reset('meta', 'name', 'subject_id');
+        setIsHydrated(true);
     }
 
     return (
         <Layout title="Subjects"
             cta={<><button onClick={() => modelRef.current.showModal()} className="btn btn-primary"><i className="bx bx-plus text-lg"></i> Subject</button></>}>
-            <div className="card bg-base-100">
+            <div className="card bg-base-100 shadow">
                 <div className="card-body">
                     <Grid
-                    columns={columns}
-                    data={rows}
-                    placeholder="No Rows Found"
+                        url={location.href}
+                        haveActions={true}
+                        onRowEdit={onRowEdit}
+                        onRowDelete={onRowDelete}
+                        columns={columns}
+                        placeholder="No Rows Found"
+                        hydration={{value:isHydrated, set: setIsHydrated}}
                      />
                 </div>
             </div>
@@ -76,7 +70,7 @@ export default function Subjects({columns, auth}){
             <dialog ref={modelRef} className="modal">
                 <div className="modal-box">
                     <h3 className="font-bold text-lg">Add Subject</h3>
-                    <form action={isEditing ? `/supadmin/subject/${data.subject_id}/update` : "/supadmin/subject/store"} onSubmit={formHandler((isEditing ? put : post), onSuccess)}>
+                    <form action={isEditing ? route('supadmin.subject.update', data.subject_id) : route('supadmin.subject.store')} onSubmit={formHandler((isEditing ? put : post), onSuccess)}>
                         <div className="py-4">
                             <div className="form-control mb-2">
                                 <label htmlFor="name">Name <span className="text-error">*</span></label>
@@ -85,7 +79,7 @@ export default function Subjects({columns, auth}){
                             </div>
                             <div className="form-control mb-2">
                                 <label htmlFor="meta" className="mb-1">Description</label>
-                                <textarea defaultValue={data.meta} onInput={(e) => setData('meta', e.target.value)} name="meta" id="meta" placeholder="give a brief about the subject, to clarify the users" className="input input-bordered"></textarea>
+                                <textarea value={data.meta} onInput={(e) => setData('meta', e.target.value)} name="meta" id="meta" placeholder="give a brief about the subject, to clarify the users" className="input input-bordered"></textarea>
                                 {errors.meta && <span className="text-error">{errors.meta}</span>}
                             </div>
                         </div>
