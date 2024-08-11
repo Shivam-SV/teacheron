@@ -21,9 +21,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'email', 'alternate_emails', 'password', 'bio', 'address',
-        'alternate_phone', 'languages_known', 'google_id',
-        'email_verified_at', 'gender', 'date_of_birth', 'status',
+        'name', 'email',  'password', 'bio', 'address', 'country_id',
+        'google_id', 'email_verified_at', 'gender', 'date_of_birth', 'status',
         'status_updated_at', 'verified_at', 'verified_by', 'have_password',
         'user_login_type'
     ];
@@ -79,5 +78,19 @@ class User extends Authenticatable
             ->withPivot('level_from_id', 'level_to_id')
             ->using(UserHaveSubject::class)
             ->withTimestamps();
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'created_by_user_id');
+    }
+
+    public function userContacts(){
+        return $this->hasMany(UserContact::class);
     }
 }

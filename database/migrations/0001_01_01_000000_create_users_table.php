@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Enums\UserStatus;
+use App\Enums\UserLoginTypes;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -16,23 +18,22 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('bio')->nullable();
             $table->string('address', 200)->nullable();
+            $table->foreignId('country_id')->nullable()->constrained('countries');
             $table->string('email', 100)->unique();
-            $table->text('alternate_emails')->nullable()->comment('JSON column');
-            $table->text('alternate_phone')->nullable()->comment('JSON column');
-            $table->text('languages_known')->nullable()->comment('JSON column');
             $table->string('password', 255)->nullable();
             $table->text('google_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('gender', ['male', 'female', 'not specified'])->default('not specified');
             $table->date('date_of_birth')->nullable();
-            $table->enum('status', ['deactive', 'active', 'suspended', 'banned'])->default('active');
+            $table->enum('status', array_column(UserStatus::cases(), 'value'))->default(UserStatus::ACTIVE->value);
             $table->dateTime('status_updated_at')->nullable();
             $table->dateTime('verified_at')->nullable();
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->boolean('have_password')->default(1)->comment('0 for social login, guest, 1 for general web login');
-            $table->enum('user_login_type', ['web', 'social', 'guest'])->default('web');
+            $table->enum('user_login_type', array_column(UserLoginTypes::cases(), 'value'))->default(UserLoginTypes::WEB->value);
             $table->rememberToken();
             $table->timestamps();
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

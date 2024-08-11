@@ -10,11 +10,11 @@ class Level extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['level_name', 'experties_as', 'created_by_user_id'];
+    protected $fillable = ['name', 'slug', 'group_name', 'tags', 'created_by_user_id'];
 
     protected function casts(){
         return [
-            "experties_as" => LevelExperties::class
+            "tags" => 'array'
         ];
     }
 
@@ -32,13 +32,10 @@ class Level extends Model
 
     public static function GridColumns(){
         return [
-            ["title" => 'Level', 'field' => 'level_name'],
-            ["title" => 'Experties', 'field' => 'experties_as'],
+            ["title" => 'Level', 'field' => 'name'],
+            ["title" => 'Group', 'field' => 'group_name'],
+            ["title" => 'Tags', 'field' => 'tags'],
         ];
-    }
-
-    public static function experties(){
-        return LevelExperties::cases();
     }
 
 }

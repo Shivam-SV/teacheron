@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Subject extends Model
 {
     use HasFactory, SoftDeletes;
-
     protected $fillable = ['name', 'meta', 'created_by_user_id'];
 
     public function user()

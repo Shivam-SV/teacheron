@@ -74,6 +74,7 @@ trait HasUserAuthentications
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
                 'email_verified_at' => now(),
+                'country_id' => config('defaults.country_id'),
                 'status' => 'active',
                 'status_updated_at' => now(),
                 'have_password' => 0,
@@ -116,7 +117,7 @@ trait HasUserAuthentications
 
         # Storing User and adding a role for him
         DB::beginTransaction();
-        $user = User::create($request->only('email', 'password', 'name'));
+        $user = User::create(array_merge($request->only('email', 'password', 'name'), ['country_id' => config('defaults.country_id')]));
         UserHaveRole::create(['user_id' => $user->id, 'role_id' => $request->role]);
         DB::commit();
 
