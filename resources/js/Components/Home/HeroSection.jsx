@@ -3,7 +3,7 @@ export default function HeroSection(){
         <section className="bg-secondary/10">
             <div className="container mx-auto lg:p-16 md:p-10 p-4">
                 <h1 className="my-6 text-center font-extrabold text-6xl">There are lots of oppotunities for you</h1>
-                <div className="card bg-white xl:mx-14 mb-4">
+                <div className="card bg-base-100 xl:mx-14 mb-4">
                     <div className="card-body">
                         <div className="grid grid-cols-12 gap-4">
                             <div className="form-control md:col-span-5 sm:col-span-6 col-span-12">

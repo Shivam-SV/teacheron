@@ -4,31 +4,49 @@ export default function Experience({ user }) {
             <div className="card-body">
                 <h2 className="card-title mb-3 text-2xl font-bold">Experience</h2>
 
-                <div className="card bg-base-100 rounded-none border-b-2">
-                    <div className="card-body px-4 py-4">
-                        <h3 className="card-title">Ph.D. in Aerospace Engineering</h3>
-                        <p className="m-0">IISc, Bangalore</p>
-                        <p className="m-0 text-sm">Feb 2018 - Mar 2022</p>
-                        <p className="m-0 text-sm"><span className="font-medium">Scored:</span> 8.2/10</p>
-                    </div>
-                </div>
-
-                <div className="card bg-base-100 rounded-none border-b-2">
-                    <div className="card-body px-4 py-4">
-                        <h3 className="card-title">BCA (Computer Science)</h3>
-                        <p className="m-0">BBK DAV College</p>
-                        <p className="m-0 text-sm">Mar 2018 - Apr 2020</p>
-                        <p className="m-0 text-sm"><span className="font-medium">Scored:</span> 8.2/10</p>
-                    </div>
-                </div>
-
-                <div className="card bg-base-100 rounded-none border-b-2">
-                    <div className="card-body px-4 py-4">
-                        <h3 className="card-title">Matriculation</h3>
-                        <p className="m-0">BBK DAV College</p>
-                        <p className="m-0 text-sm">Jun 2018 - Aug 2020</p>
-                        <p className="m-0 text-sm"><span className="font-medium">Scored:</span> 8.2/10</p>
-                    </div>
+                <div className="p-4 md:p-2">
+                    <ul className="timeline timeline-vertical timeline-compact">
+                        <li>
+                            <div className="timeline-start">Mar 2022</div>
+                            <div className="timeline-middle">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="timeline-end timeline-box">
+                                <h3 className="text-base font-semibold">Ph.D. in Aerospace Engineering</h3>
+                                <p><em>IISc, Bangalore</em> <span className="badge badge-primary">78%</span></p>
+                            </div>
+                            <hr />
+                        </li>
+                        <li>
+                            <hr />
+                            <div className="timeline-start">Mar 2022</div>
+                            <div className="timeline-middle">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="timeline-end timeline-box">
+                                <h3 className="text-base font-semibold">Ph.D. in Aerospace Engineering</h3>
+                                <p><em>IISc, Bangalore</em> <span className="badge badge-primary">78%</span></p>
+                            </div>
+                            <hr />
+                        </li>
+                        <li>
+                            <hr />
+                            <div className="timeline-start">Mar 2022</div>
+                            <div className="timeline-middle">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="timeline-end timeline-box">
+                                <h3 className="text-base font-semibold">Ph.D. in Aerospace Engineering</h3>
+                                <p><em>IISc, Bangalore</em> <span className="badge badge-primary">78%</span></p>
+                            </div><hr />
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

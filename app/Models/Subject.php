@@ -23,10 +23,10 @@ class Subject extends Model
             ->withPivot('level_from_id', 'level_to_id');
     }
 
-    public static function TabulatorColumns(){
+    public static function GridColumns(){
         return [
-            ["title" => 'Name', 'field' => 'name', 'headerFilter' => true],
-            ["title" => 'Meta', 'field' => 'meta', 'headerFilter' => true]
+            ["title" => 'Name', 'field' => 'name'],
+            ["title" => 'Meta', 'field' => 'meta'],
         ];
     }
 }
