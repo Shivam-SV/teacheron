@@ -11,13 +11,13 @@ export default function SideBar(){
                     <h2 className="menu-title">Users</h2>
                     <ul>
                         <li>
-                            <Link href="/supadmin/teachers" classID="text-base">
+                            <Link href="/supadmin/teacher" classID="text-base">
                                 <i className='bx bxs-user text-lg align-middle'></i>
                                 <span className="grow">Teachers</span>
                             </Link>
                         </li>
                         <li>
-                            <Link href="/supadmin/Students" classID="text-base">
+                            <Link href="/supadmin/Student" classID="text-base">
                                 <i className='bx bx-user text-lg align-middle'></i>
                                 <span className="grow">Students</span>
                             </Link>

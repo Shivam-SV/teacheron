@@ -7,7 +7,9 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\LevelController;
+use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeacherController;
 
 # Authentication Routes
 Route::inertia('/', 'Index')->name('home');
@@ -58,6 +60,8 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
         // subject
         Route::resource('/subject', SubjectController::class, ['except' => ['create', 'edit']]);
         Route::resource('/level', LevelController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/teacher', TeacherController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/student', StudentController::class, ['except' => ['create', 'edit']]);
     });
 });
 

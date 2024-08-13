@@ -21,7 +21,6 @@ class LevelController extends Controller
         }
 
         return inertia('Admin/Level/Index', [
-            'columns' => $this->getColumns(),
             'experties' => $this->model::experties(),
             ... $this->defaultViewData()
         ]);

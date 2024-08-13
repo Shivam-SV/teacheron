@@ -27,7 +27,8 @@ trait HaveGrid{
         if($request->has('pageSize') && in_array($request->pageSize, $this->pageSizes)) $this->defaultPageSize = $request->pageSize;
         return [
             'defaultPageSize' => $this->defaultPageSize,
-            'pageSizes' => $this->pageSizes
+            'pageSizes' => $this->pageSizes,
+            'columns' => $this->getColumns()
         ];
     }
 }

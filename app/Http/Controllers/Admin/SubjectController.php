@@ -20,7 +20,6 @@ class SubjectController extends Controller{
         }
 
         return inertia('Admin/Subject/Index', [
-            'columns' => $this->getColumns(),
             ... $this->defaultViewData()
         ]);
     }
