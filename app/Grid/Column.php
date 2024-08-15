@@ -2,8 +2,6 @@
 
 namespace App\Grid;
 
-use Illuminate\Database\Eloquent\Model;
-
 class Column{
 
     const TYPE_TEXT = 'text';
@@ -16,15 +14,27 @@ class Column{
     protected bool $is_sortable = true;
     protected bool $is_searchable = true;
     protected string $sort_by = '';
+    protected string $label;
+    protected bool $isRelatedColumn = false;
 
     public function __construct(
         public string $column,
-        public string $label,
         public string $type = 'text',
     ){}
 
-    public static function make(string $column, string $label, string $type = self::TYPE_TEXT): static{
-        return new static($column, $label, $type);
+    public static function make(string $column, string $type = self::TYPE_TEXT): static{
+        if(str_contains($column,'.')) $this->isRelatedColumn = true;
+        return new static($column, $type);
+    }
+
+    public function makeLabel(string $column): string{
+        if(str_contains($column,'.')) $column = array_pop(explode('.', $column));
+        return ucfirst($column);
+    }
+
+    public function label(string $label): static{
+        $this->label = $label;
+        return $this;
     }
 
     public function visible(bool $is_visible = true): static{
@@ -48,21 +58,21 @@ class Column{
     }
 
     public function __toString(): string{
-        return [
+        return json_encode([
             'column' => $this->column,
-            'label' => $this->label,
+            'label' => $this->label ?? $this->makeLabel($this->column),
             'type' => $this->type,
             'is_visible' => $this->is_visible,
             'is_sortable' => $this->is_sortable,
             'is_searchable' => $this->is_searchable,
             'sort_by' => $this->sort_by,
-        ];
+        ]);
     }
 
     public function toArray(): array{
         return [
             'column' => $this->column,
-            'label' => $this->label,
+            'label' => $this->label ?? $this->makeLabel($this->column),
             'type' => $this->type,
             'is_visible' => $this->is_visible,
             'is_sortable' => $this->is_sortable,
@@ -77,7 +87,7 @@ class Column{
     }
 
     public function getLabel(): string{
-        return $this->label;
+        return $this->label ?? $this->makeLabel($this->column);
     }
 
     public function getType(): string{
@@ -98,5 +108,9 @@ class Column{
 
     public function getSortBy(): string{
         return $this->sort_by;
+    }
+
+    public function isRelationColumn():bool{
+        return $this->isRelatedColumn;
     }
 }

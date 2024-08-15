@@ -51,21 +51,25 @@ class Grid{
         $this->request = request();
         $query = is_string($this->model) ? $this->model::query() : $this->model;
 
-        $query = $this->getSelectiveColumns($query);
         $query = $this->applyFilters($query);
         $query = $this->applySorts($query);
+        $query = $this->getSelectiveColumns($query);
         $query = $this->applyPagination($query);
 
-        return collect(['columns' => $this->columns->map(fn(Column $column) => $column->toArray()), ...$query->toArray(), 'pagination' => $this->paginationOptions]);
+        return collect([
+            'columns' => $this->columns->getColumnsColumn(), 
+            ...$query->toArray(), 
+            'pagination' => $this->paginationOptions
+        ]);
     }
 
     public function columns(array $columns): static {
-        $this->columns = collect($columns);
+        $this->columns = new Columns($columns);
         return $this;
     }
 
     public function getSelectiveColumns(Builder $query): Builder {
-        return $query->select($this->columns->map(fn(Column $column) => $column->getColumn())->toArray());
+        return $query->select($this->columns->getColumnsColumn());
     }
 
     /**
@@ -74,11 +78,11 @@ class Grid{
     public function applyFilters(Builder $query): Builder {
         if($this->request->has('search')){
             $query->where(function(Builder $query) {
-                $this->columns->each(function(Column $column) use ($query){
+                foreach($this->columns->getColumnsColumn() as $column) {
                     if($column->getIsSearchable()){
-                        $query->where($column->getColumn(), 'like', '%' . request('search') . '%');
+                        $query->where($column, 'like', '%' . $this->request->get('search') . '%');
                     }
-                });
+                }
             });
         }
         return $query;
