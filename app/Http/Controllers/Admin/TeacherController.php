@@ -13,7 +13,7 @@ class TeacherController extends Controller{
 
     public function index(){
         return Inertia::render('Admin/Teacher/Index', [
-            'teachers' => Grid::of($this->model)
+            'teachers' => Grid::of($this->model::whereHas('roles', fn($query) => $query->where('name', 'teacher')))
                 ->columns([
                     Column::make('name', 'Name'),
                     Column::make('email', 'Email'),

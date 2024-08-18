@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Grid\Grid;
+use App\Grid\Column;
 use App\Models\Level;
-use App\Traits\HaveGrid;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Enums\LevelExperties;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
 
 class LevelController extends Controller
 {
-    use HaveGrid;
     protected $model = Level::class;
 
     public function index(){
@@ -21,21 +21,28 @@ class LevelController extends Controller
         }
 
         return inertia('Admin/Level/Index', [
-            'experties' => $this->model::experties(),
-            ... $this->defaultViewData()
+            'levels' => Grid::of($this->model)
+                ->columns([
+                    Column::make('name'),
+                    Column::make('group_name'),
+                    Column::make('tags')->transform(fn($row) => is_array($row->tags) ? implode(', ',$row->tags) : null),
+                    Column::action('action')
+                ])->render()
         ]);
     }
 
     public function store(Request $request){
         $request->validate([
-            'level_name' => 'required|max:70|regex:/^[\w\-\s]+$/',
-            'experties_as' => 'required|in:'.implode(',', array_column($this->model::experties(), 'value')),
+            'name' => 'required|max:70|regex:/^[\w\-\s]+$/',
+            'group_name' => 'required|max:50|regex:/^[\w\-\s]+$/',
+            'tags' => 'nullable|array',
             'created_by_user_id' => 'required|exists:users,id'
         ]);
 
         try{
-            $level = Level::create($request->only('level_name', 'experties_as', 'created_by_user_id'));
-            Session::flash('success', "{$level->level_name} has been added to levels");
+            $slug = Str::slug($request->name);
+            $level = Level::create(array_merge($request->only('name', 'group_name', 'tags', 'created_by_user_id'), compact('slug')));
+            Session::flash('success', "{$level->name} has been added to levels");
         }catch(\Throwable $th){
             Log::error("Fail to create the level due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while creating the level! Reverted the data back");
@@ -44,12 +51,14 @@ class LevelController extends Controller
 
     public function update(Request $request, $levelId){
         $request->validate([
-            'level_name' => 'required|max:70|regex:/^[\w\-\s]+$/',
-            'experties_as' => 'required|in:'.implode(',', array_column($this->model::experties(), 'value')),
+            'name' => 'required|max:70|regex:/^[\w\-\s]+$/',
+            'group_name' => 'required|max:50|regex:/^[\w\-\s]+$/',
+            'tags' => 'nullable|array',
+            'created_by_user_id' => 'required|exists:users,id'
         ]);
 
         try{
-            Level::find($levelId)->update($request->only('level_name', 'experties_as'));
+            $level = Level::find($levelId)->update($request->only('name', 'group_name', 'tags', 'created_by_user_id'));
             Session::flash('success', "Level has been updated");
         }catch(\Throwable $th){
             Log::error("Fail to update (id: {$levelId}) the level due to: {$th->getMessage()}");

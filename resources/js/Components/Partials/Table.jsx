@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 
-export default function Table({ resource }) {
+export default function Table({ resource, placeholder, actions }) {
     const [query, setQuery] = useState({});
 
     const handleSearch = (e) => {
@@ -25,15 +25,20 @@ export default function Table({ resource }) {
         return () => clearTimeout(hydrateTable);
     }, [query]);
 
+    const ActionComponent = ({actionName, row}) => {
+        const Action = actions[actionName];
+        return Action ? <Action row={row} /> : <><p>Lan fad lo</p></>;
+    }
+
     return (
         <div className="grid-wrapper">
-            <div className="filters grid grid-cols-12 gap-4">
+            <div className="filters flex gap-4 justify-between items-center flex-wrap">
                 <div className="col-span-3">
                     <div className="form-control mb-2">
                         <input type="Search" className="input input-bordered input-sm" placeholder="Search" value={query?.search ?? ''} onChange={handleSearch} />
                     </div>
                 </div>
-                <div className="col-span-1 col-start-12">
+                <div className="col-span-1">
                     <div className="form-control mb-2">
                         <select className="select select-bordered select-sm" defaultValue={resource?.per_page ?? ''} onChange={handlePerPage}>
                             {resource?.pagination?.length > 0 && resource?.pagination?.map((item, index) => (
@@ -65,13 +70,13 @@ export default function Table({ resource }) {
                         {resource?.data?.length > 0 ? resource?.data?.map((item, index) => (
                             <tr key={index}>
                                 {
-                                    resource?.columns?.length > 0 && resource?.columns?.map((column, i) => (
-                                        <td key={i}>{item[column.column]}</td>
-                                    ))
+                                    resource?.columns?.length > 0 && resource?.columns?.map((column, i) => {
+                                        return (column.is_action ? <td key={i}><ActionComponent actionName={column.column} row={item} /></td> : <td key={i}>{item[column.column]}</td>)
+                                    })
                                 }
                             </tr>
                         )) : <tr>
-                            <td colSpan={resource?.columns?.length} className="text-center">No rows found</td>
+                            <td colSpan={resource?.columns?.length} className="text-center">{placeholder ?? 'No rows found'}</td>
                         </tr>}
                     </tbody>
                 </table>

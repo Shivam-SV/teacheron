@@ -6,21 +6,22 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use App\Traits\HaveGrid;
 use Illuminate\Support\Facades\Session;
+use App\Grid\Grid;
+use App\Grid\Column;
 
 class SubjectController extends Controller{
-    use HaveGrid;
-
     protected $model = Subject::class;
 
     public function index(){
-        if(!request()->inertia() && request()->expectsJson()){
-            return $this->getQueryData();
-        }
 
         return inertia('Admin/Subject/Index', [
-            ... $this->defaultViewData()
+            'subjects' => Grid::of($this->model)
+                ->columns([
+                    Column::make('name'),
+                    Column::make('meta'),
+                    Column::action('action')
+                ])->render()
         ]);
     }
 

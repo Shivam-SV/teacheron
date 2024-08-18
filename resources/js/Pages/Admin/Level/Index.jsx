@@ -4,12 +4,15 @@ import Grid from "../../../Components/Partials/Grid";
 import { router, useForm } from "@inertiajs/react";
 import { formHandler } from "../../../Helpers/appHelper";
 import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
+import Table from "../../../Components/Partials/Table";
+import CreatableSelect from 'react-select/creatable';
 
-export default function level({columns, experties, auth}){
+export default function level({levels, auth}){
     const defaultFormValues = {
-        level_id: '',
-        level_name: '',
-        experties_as: experties[0],
+        id: '',
+        name: '',
+        group_name: "",
+        tags: [],
         created_by_user_id: auth.id
     };
     const badgeColors = {
@@ -22,7 +25,6 @@ export default function level({columns, experties, auth}){
     const modelRef = useRef(null);
     const DeleteRef = useRef(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [isHydrated, setIsHydrated] = useState(false);
     const [deletableRowId, setDeletableRowId] = useState(null);
 
     const {processing, post, put, data, setData, errors} = useForm(defaultFormValues);
@@ -30,14 +32,15 @@ export default function level({columns, experties, auth}){
     const onSuccess = () => {
         modelRef.current.close();
         setData(defaultFormValues);
-        setIsHydrated(true);
     }
 
     const onRowEdit = (event, row) => {
         setData({
-            level_name: row.level_name,
-            experties_as: row.experties_as,
-            level_id: row.id
+            name: row.name,
+            group_name: row.group_name,
+            tags: row.tags.split(', '),
+            id: row.id,
+            created_by_user_id: auth.id
         })
         setIsEditing(true);
         modelRef.current.showModal()
@@ -52,14 +55,8 @@ export default function level({columns, experties, auth}){
         router.delete(route('supadmin.level.destroy', deletableRowId), {
             onFinish(){
                 DeleteRef.current.close();
-                setIsHydrated(true)
             }
         });
-    }
-
-    const stylizeExperties = (r) => {
-        r.experties_as = <div className={"badge " + (badgeColors[r.experties_as] ?? '')}>{r.experties_as.ucfirst()}</div>
-        return r;
     }
 
     return (
@@ -68,16 +65,20 @@ export default function level({columns, experties, auth}){
 
         <div className="card bg-base-100 shadow">
             <div className="card-body">
-                <Grid
-                    url={location.href}
-                    haveActions={true}
-                    onRowEdit={onRowEdit}
-                    onRowDelete={onRowDelete}
-                    onRowsRender={stylizeExperties}
-                    columns={columns}
-                    placeholder="No Rows Found"
-                    hydration={{value:isHydrated, set: setIsHydrated}}
-                    />
+                <Table
+                    resource={levels}
+                    placeholder="No Levels Found"
+                    actions={{
+                        action: ({row})=>{
+                            return (
+                                <>
+                                    <button className="btn btn-primary btn-sm mr-1" onClick={(e) => onRowEdit(e, row)}><i className="bx bx-edit"></i> Edit</button>
+                                    <button className="btn btn-error btn-sm" onClick={(e) => onRowDelete(e, row)}><i className="bx bx-trash"></i> Delete</button>
+                                </>
+                            )
+                        }
+                    }}
+                />
             </div>
         </div>
 
@@ -85,21 +86,22 @@ export default function level({columns, experties, auth}){
         <dialog ref={modelRef} className="modal">
             <div className="modal-box">
                 <h3 className="font-bold text-lg">Add Level</h3>
-                <form action={isEditing ? route('supadmin.level.update', data.level_id) : route('supadmin.level.store')} onSubmit={formHandler((isEditing ? put : post), onSuccess)}>
+                <form action={isEditing ? route('supadmin.level.update', data.id) : route('supadmin.level.store')} onSubmit={formHandler((isEditing ? put : post), onSuccess)}>
                     <div className="py-4">
                         <div className="form-control mb-2">
-                            <label htmlFor="level_name">Level Name <span className="text-error">*</span></label>
-                            <input value={data.level_name} onInput={(e) => setData('level_name', e.target.value)} type="text" className="input input-bordered" id="level_name" placeholder="Eg: Matrix / Senior Studies" />
-                            {errors.level_name && <span className="text-error">{errors.level_name}</span>}
+                            <label htmlFor="name">Level Name <span className="text-error">*</span></label>
+                            <input value={data.name} onInput={(e) => setData('name', e.target.value)} type="text" className="input input-bordered" id="name" placeholder="Eg: Matrix / Senior Studies" />
+                            {errors.name && <span className="text-error">{errors.name}</span>}
                         </div>
                         <div className="form-control mb-2">
-                            <label htmlFor="meta" className="mb-1">Experties</label>
-                            <select name="experties_as" id="experties_as" className="select select-bordered" defaultValue={data.experties_as} onChange={(e) => setData('experties_as', e.target.value)}>
-                                { experties.length > 0 ? experties.map(e => {
-                                    return <option key={e} value={e} >{e.ucfirst()}</option>
-                                }) : <option className="italic">No experties defined</option> }
-                            </select>
-                            {errors.experties_as && <span className="text-error">{errors.experties_as}</span>}
+                            <label htmlFor="group_name">Level Group Name <span className="text-error">*</span></label>
+                            <input value={data.group_name} onInput={(e) => setData('group_name', e.target.value)} type="text" className="input input-bordered" id="group_name" placeholder="Eg: Courses / Std" />
+                            {errors.group_name && <span className="text-error">{errors.group_name}</span>}
+                        </div>
+                        <div className="form-control mb-2">
+                            <label htmlFor="tags">Tags <span className="text-error">*</span></label>
+                            <CreatableSelect options={[]} isClearable value={data.tags?.map(v => ({label: v, value: v}))} isMulti onChange={value => setData('tags', value.map(v => v.value))} placeholder="Tags for better search" />
+                            {errors.tags && <span className="text-error">{errors.tags}</span>}
                         </div>
                     </div>
                     <div className="modal-action">

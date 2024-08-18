@@ -30,12 +30,4 @@ class Level extends Model
         return $this->hasMany(UserHaveSubject::class, 'level_to_id');
     }
 
-    public static function GridColumns(){
-        return [
-            ["title" => 'Level', 'field' => 'name'],
-            ["title" => 'Group', 'field' => 'group_name'],
-            ["title" => 'Tags', 'field' => 'tags'],
-        ];
-    }
-
 }

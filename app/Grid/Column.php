@@ -9,13 +9,16 @@ class Column{
     const TYPE_DATE = 'date';
     const TYPE_DATETIME = 'datetime';
     const TYPE_BOOLEAN = 'boolean';
+    const TYPE_ACTION = 'action';
 
     protected bool $is_visible = true;
     protected bool $is_sortable = true;
     protected bool $is_searchable = true;
+    protected bool $is_action = false;
     protected string $sort_by = '';
     protected string $label;
     protected bool $isRelatedColumn = false;
+    protected $transformer = null;
 
     public function __construct(
         public string $column,
@@ -25,6 +28,10 @@ class Column{
     public static function make(string $column, string $type = self::TYPE_TEXT): static{
         if(str_contains($column,'.')) $this->isRelatedColumn = true;
         return new static($column, $type);
+    }
+
+    public static function action(string $column, string $type = self::TYPE_ACTION): static{
+        return (new static($column, $type))->sortable(false)->searchable(false)->is_action(true);
     }
 
     public function makeLabel(string $column): string{
@@ -57,6 +64,16 @@ class Column{
         return $this;
     }
 
+    public function is_action(bool $is_action):static{
+        $this->is_action = $is_action;
+        return $this;
+    }
+
+    public function transform(callable $callback):static{
+        $this->transformer = $callback;
+        return $this;
+    }
+
     public function __toString(): string{
         return json_encode([
             'column' => $this->column,
@@ -65,6 +82,7 @@ class Column{
             'is_visible' => $this->is_visible,
             'is_sortable' => $this->is_sortable,
             'is_searchable' => $this->is_searchable,
+            "is_action" => $this->is_action,
             'sort_by' => $this->sort_by,
         ]);
     }
@@ -77,6 +95,7 @@ class Column{
             'is_visible' => $this->is_visible,
             'is_sortable' => $this->is_sortable,
             'is_searchable' => $this->is_searchable,
+            "is_action" => $this->is_action,
             'sort_by' => $this->sort_by,
         ];
     }
@@ -112,5 +131,17 @@ class Column{
 
     public function isRelationColumn():bool{
         return $this->isRelatedColumn;
+    }
+
+    public function isAction():bool{
+        return $this->is_action;
+    }
+
+    public function isTransformable(){
+        return is_callable($this->transformer);
+    }
+
+    public function callTransformer($row){
+        return call_user_func($this->transformer, $row);
     }
 }

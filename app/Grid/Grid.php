@@ -4,6 +4,7 @@ namespace App\Grid;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -11,9 +12,9 @@ class Grid{
 
     /**
      * Holds the columns of the grid
-     * @var Collection<Column>
+     * @var Columns<Column>
      */
-    protected Collection $columns;
+    protected Columns $columns;
 
     /**
      * Holds the request object
@@ -23,12 +24,18 @@ class Grid{
     /**
      * default number of items per page
      */
-    protected $defaultPerPage = 10;
+    protected int $defaultPerPage = 10;
 
     /**
      * Possible pagination options
      */
-    protected $paginationOptions = [10, 25, 50, 100];
+    protected array $paginationOptions = [10, 25, 50, 100];
+
+    private string $query = '';
+
+    private array $queryBindings = [];
+
+    private array $requireColumns = ['id'];
 
     /**
      * @param $model
@@ -51,15 +58,24 @@ class Grid{
         $this->request = request();
         $query = is_string($this->model) ? $this->model::query() : $this->model;
 
+        # filtering and sorting with query
         $query = $this->applyFilters($query);
         $query = $this->applySorts($query);
+        # apply selective columns
         $query = $this->getSelectiveColumns($query);
+        # capturing the query
+        $this->captureQuery($query);
+        # applying paginations
         $query = $this->applyPagination($query);
+        # transforming rows
+        $query = $this->transformRows($query);
 
         return collect([
-            'columns' => $this->columns->getColumnsColumn(), 
-            ...$query->toArray(), 
-            'pagination' => $this->paginationOptions
+            'columns' => $this->columns->toArray(),
+            ...$query->toArray(),
+            'pagination' => $this->paginationOptions,
+            "query" => $this->query,
+            "bindings" => $this->queryBindings
         ]);
     }
 
@@ -68,21 +84,21 @@ class Grid{
         return $this;
     }
 
-    public function getSelectiveColumns(Builder $query): Builder {
-        return $query->select($this->columns->getColumnsColumn());
+    protected function getSelectiveColumns(Builder $query): Builder {
+        return $query->select(array_merge($this->columns->getColumnsColumn(true), $this->requireColumns));
     }
 
     /**
      * Apply filters to the query
      */
-    public function applyFilters(Builder $query): Builder {
+    protected function applyFilters(Builder $query): Builder {
         if($this->request->has('search')){
             $query->where(function(Builder $query) {
-                foreach($this->columns->getColumnsColumn() as $column) {
+                $this->columns->map(function($column) use($query){
                     if($column->getIsSearchable()){
-                        $query->where($column, 'like', '%' . $this->request->get('search') . '%');
+                        $query->where($column->getColumn(), 'like', '%' . $this->request->get('search') . '%');
                     }
-                }
+                });
             });
         }
         return $query;
@@ -91,7 +107,7 @@ class Grid{
     /**
      * Apply sorts to the query
      */
-    public function applySorts(Builder $query): Builder {
+    protected function applySorts(Builder $query): Builder {
         if($this->request->has('sort')){
             $column = $this->columns->first(fn(Column $column) => key($this->request->sort) === $column->getColumn() && $column->getIsSortable());
             if($column){
@@ -105,15 +121,28 @@ class Grid{
     /**
      * Apply pagination to the query
      */
-    public function applyPagination(Builder $query): LengthAwarePaginator {
+    protected function applyPagination(Builder $query): LengthAwarePaginator {
         return $query->paginate($this->request->per_page ?? $this->defaultPerPage);
     }
 
     /**
      * Set the pagination options
      */
-    public function paginationOptions(array $options): static {
+    protected function paginationOptions(array $options): static {
         $this->paginationOptions = $options;
         return $this;
+    }
+
+    protected function captureQuery($query){
+        $this->query = $query->toSql();
+        $this->queryBindings = $query->getBindings();
+    }
+
+    protected function transformRows($query){
+        $rows = clone $query;
+        foreach($rows as $row){
+            $this->columns->map(fn($column) => $column->isTransformable() ? ($row[$column->getColumn()] = $column->callTransformer($row)) : null);
+        }
+        return $rows;
     }
 }

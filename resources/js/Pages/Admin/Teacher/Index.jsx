@@ -5,7 +5,10 @@ export default function Index({teachers}){
         <Layout>
             <div className="card bg-white">
                 <div className="card-body">
-                    <Table resource={teachers} />
+                    <Table
+                        resource={teachers}
+                        placeholder="No Teachers Found"
+                    />
                 </div>
             </div>
         </Layout>

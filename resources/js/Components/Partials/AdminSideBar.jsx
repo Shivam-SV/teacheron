@@ -17,7 +17,7 @@ export default function SideBar(){
                             </Link>
                         </li>
                         <li>
-                            <Link href="/supadmin/Student" classID="text-base">
+                            <Link href="/supadmin/student" classID="text-base">
                                 <i className='bx bx-user text-lg align-middle'></i>
                                 <span className="grow">Students</span>
                             </Link>

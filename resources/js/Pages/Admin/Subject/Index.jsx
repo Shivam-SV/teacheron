@@ -4,8 +4,9 @@ import Grid from "../../../Components/Partials/Grid";
 import { formHandler } from "../../../Helpers/appHelper";
 import { router, useForm } from "@inertiajs/react";
 import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
+import Table from "../../../Components/Partials/Table";
 
-export default function Subjects({columns, auth}){
+export default function Subjects({subjects, auth}){
     const defaultFormValues = {
         subject_id: '',
         name: '',
@@ -18,9 +19,9 @@ export default function Subjects({columns, auth}){
 
     const {processing, post, put, data, setData, errors, reset} = useForm(defaultFormValues);
     const [isEditing, setIsEditing] = useState(false);
-    const [isHydrated, setIsHydrated] = useState(false);
 
     const onRowEdit = (event, row) => {
+        console.log(row);
         setData({
             name: row.name,
             meta: row.meta,
@@ -39,15 +40,13 @@ export default function Subjects({columns, auth}){
         router.delete(route('supadmin.subject.destroy', deletableRowId), {
             onFinish(){
                 DeleteRef.current.close();
-                setIsHydrated(true)
             }
         });
     }
 
     const onSuccess = () => {
         modelRef.current.close();
-        reset('meta', 'name', 'subject_id');
-        setIsHydrated(true);
+        reset('meta', 'name', 'subject_id');;
     }
 
     return (
@@ -55,15 +54,20 @@ export default function Subjects({columns, auth}){
             cta={<><button onClick={() => modelRef.current.showModal()} className="btn btn-primary"><i className="bx bx-plus text-lg"></i> Subject</button></>}>
             <div className="card bg-base-100 shadow">
                 <div className="card-body">
-                    <Grid
-                        url={location.href}
-                        haveActions={true}
-                        onRowEdit={onRowEdit}
-                        onRowDelete={onRowDelete}
-                        columns={columns}
-                        placeholder="No Rows Found"
-                        hydration={{value:isHydrated, set: setIsHydrated}}
-                     />
+                    <Table
+                        resource={subjects}
+                        placeholder="No Subjects Found"
+                        actions={{
+                            action:({row}) => {
+                                return (
+                                    <>
+                                        <button className="btn btn-primary btn-sm mr-1" onClick={(e) => onRowEdit(e, row)}><i className="bx bx-edit"></i> Edit</button>
+                                        <button className="btn btn-error btn-sm" onClick={(e) => onRowDelete(e, row)}><i className="bx bx-trash"></i> Delete</button>
+                                    </>
+                                )
+                            }
+                        }}
+                    />
                 </div>
             </div>
 
