@@ -93,4 +93,27 @@ class User extends Authenticatable
     public function userContacts(){
         return $this->hasMany(UserContact::class);
     }
+
+    public function phoneNumbers(){
+        return $this->userContacts()->whereNotNull('phone');
+    }
+
+    public function alternateEmails(){
+        return $this->userContacts()->whereNotNull('email');
+    }
+
+    public function alternateAddresses(){
+        return $this->userContacts()->whereNotNull('address');
+    }
+
+    # role scopes
+    public function scopeTeacher(){
+        return $this->whereHas('roles', fn($query) => $query->where('name', 'teacher'));
+    }
+    public function scopeStudent(){
+        return $this->whereHas('roles', fn($query) => $query->where('name', 'student'));
+    }
+    public function scopeAdmin(){
+        return $this->whereHas('roles', fn($query) => $query->where('name', 'admin'));
+    }
 }

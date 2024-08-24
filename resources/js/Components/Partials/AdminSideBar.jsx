@@ -41,6 +41,23 @@ export default function SideBar(){
                         </li>
                     </ul>
                 </li>
+                <li>
+                    <h2 className="menu-title">Post</h2>
+                    <ul>
+                        <li>
+                            <Link href={route('supadmin.post-purpose.index')} className="text-base">
+                                <i className='bx bx-message-rounded-dots text-lg align-middle'></i>
+                                <span className="grow">Post Purposes</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href={route('supadmin.posts.index')} className="text-base">
+                                <i className='bx bx-message-alt-detail text-lg align-middle'></i>
+                                <span className="grow">Posts</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </aside>
     );

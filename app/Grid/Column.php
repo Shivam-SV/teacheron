@@ -26,7 +26,7 @@ class Column{
     ){}
 
     public static function make(string $column, string $type = self::TYPE_TEXT): static{
-        if(str_contains($column,'.')) $this->isRelatedColumn = true;
+        if(str_contains($column,'.')) self::$isRelatedColumn = true;
         return new static($column, $type);
     }
 

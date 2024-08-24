@@ -19,12 +19,6 @@ class Post extends Model
 
     protected $appends = ['price'];
 
-    protected function casts(){
-        return [
-            'purpose' => PostPurposes::class,
-        ];
-    }
-
     public function user(){
         return $this->belongsTo(User::class, 'created_by_user_id');
     }
@@ -34,7 +28,7 @@ class Post extends Model
     }
 
     public function subjects(){
-        return $this->belongsToMany(Subject::class, PostHaveSubject::class, 'post_id', 'subject_id');
+        return $this->belongsToMany(Subject::class, 'post_have_subjects', 'post_id', 'subject_id');
     }
 
     public function level(){
@@ -42,7 +36,7 @@ class Post extends Model
     }
 
     public function languagePreference(){
-        return $this->belongsToMany(Language::class, PostHaveLanguagePreference::class, 'post_id', 'language_id');
+        return $this->belongsToMany(Language::class, 'post_have_language_preference', 'post_id', 'language_id');
     }
 
     public function purpose(){

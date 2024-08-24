@@ -1,6 +1,6 @@
 export default function Education({ user }) {
     return (
-        <div className="card bg-base-100 w-100 border">
+        <div className="card bg-base-100 w-100 border static">
             <div className="card-body">
                 <h2 className="card-title mb-3 text-2xl font-bold">Education</h2>
                 <div className="p-4 md:p-2">

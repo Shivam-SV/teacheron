@@ -4,12 +4,8 @@ use App\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\TutorController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\LevelController;
-use App\Http\Controllers\Admin\StudentController;
-use App\Http\Controllers\Admin\SubjectController;
-use App\Http\Controllers\Admin\TeacherController;
 
 # Authentication Routes
 Route::inertia('/', 'Index')->name('home');
@@ -35,11 +31,16 @@ Route::get('/profile/{userId?}/edit-basic', [UserController::class, 'EditProfile
 Route::post('/profile/{userId?}/update-basic', [UserController::class, 'UpdateBasicDetails'])->name('profile.update-basic');
 Route::post('/profile/{userId?}/update-subjects', [UserController::class, 'UpdateSubjects'])->name('profile.update-subjects');
 Route::post('/profile/{userId?}/add-phone-number', [UserController::class, 'AddPhoneNumber'])->name('profile.add-phone-number');
+Route::post('/profile/{userId?}/send-otp-to-contact', [UserController::class, 'sendOtpToContact'])->name('profile.send-otp-to-contact');
+Route::post('/profile/{userId?}/verify-otp-and-save-contact', [UserController::class, 'verifyOtpAndSaveContact'])->name('profile.verify-otp-and-save-contact');
 
 # Post Routes
 Route::get('/new-post', [PostController::class, 'createPost'])->name('new-post');
 Route::post('/post/store', [PostController::class, 'storePost'])->name('post.store');
 Route::get('/posts', [PostController::class, 'index'])->name('posts');
+
+# Teachers Routes
+Route::get('/tutors', [TutorController::class,'index'])->name('tutors');
 
 
 /**
@@ -58,10 +59,13 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
         Route::inertia('/', 'Admin/Home')->name('home');
 
         // subject
-        Route::resource('/subject', SubjectController::class, ['except' => ['create', 'edit']]);
-        Route::resource('/level', LevelController::class, ['except' => ['create', 'edit']]);
-        Route::resource('/teacher', TeacherController::class, ['except' => ['create', 'edit']]);
-        Route::resource('/student', StudentController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/subject', App\Http\Controllers\Admin\SubjectController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/level', App\Http\Controllers\Admin\LevelController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/post-purpose', App\Http\Controllers\Admin\PostPurposesController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/teacher', App\Http\Controllers\Admin\TeacherController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/student', App\Http\Controllers\Admin\StudentController::class, ['except' => ['create', 'edit']]);
+        Route::resource('/posts', App\Http\Controllers\Admin\PostController::class, ['except' => ['create', 'edit']]);
+
     });
 });
 

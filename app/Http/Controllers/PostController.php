@@ -9,6 +9,9 @@ use App\Models\Subject;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
+use App\Models\Country;
+use App\Models\PostHaveSubjects;
+use App\Models\PostPurpose;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
@@ -18,20 +21,21 @@ class PostController extends Controller
     protected $model = Post::class;
 
     public function index(Request $request){
-        dd($this->model::with('subjects')->get());
         return inertia('Post/Index', [
-            'posts' => $this->model::paginate(10)
+            'posts' => $this->model::with(['subjects', 'languagePreference','country'])->paginate(10)
         ]);
     }
 
     public function createPost(Request $request){
         $user = auth()->user();
+
         return Inertia::render('Post/Create', [
-            'phoneNumbers' => $user->alternate_phone,
-            'subjects' => Subject::get(),
-            'levels' => Level::get(),
-            'purposes' => $this->model::purposes(),
-            'languages' => Language::get()
+            "userPhoneNumbers" => $user->phoneNumbers,
+            "countries" => Country::get(),
+            "purposes" => PostPurpose::pluck('name', 'id'),
+            "levels" => Level::pluck('name', 'id'),
+            "subjects" => Subject::pluck('name', 'id'),
+            "languages" => Language::pluck('name', 'id'),
         ]);
     }
 
@@ -40,12 +44,13 @@ class PostController extends Controller
         try{
             DB::beginTransaction();
             $user = auth()->user();
-            $this->model::create(array_merge(
-                $request->only(['title', 'description', 'contact', 'language_preferrance', 'gender_preferance', 'subjects', 'level_id', 'purpose', 'min_budget', 'max_budget']), [
-                    'created_by_user_id' => $user->id,
-                    'budget_currency_code' => $user->country?->code ?? config('defaults.currency_code')
-                ]
-            ));
+            # Create post and syncing relations
+            $post = $this->model::create(
+                $request->only(['title','user_phone_id','address', 'country_id', 'description', 'purpose_id', 'budget_currency_code', 'level_id', 'gender_preferance', 'min_budget', 'max_budget', 'created_by_user_id'])
+            );
+            $post->subjects()->sync($request->subjects_id);
+            $post->languagePreference()->sync($request->language_preferrances_id);
+
             Session::flash('success', 'Your post has been created successfully');
             DB::commit();
             return to_route('home');

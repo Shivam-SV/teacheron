@@ -3,28 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserContact;
 use App\Models\UserHaveSubject;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Traits\HasUserAuthentications;
+use App\Traits\InteractWithOtp;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    use HasUserAuthentications;
+    use HasUserAuthentications, InteractWithOtp;
 
     protected $admin = false;
 
     public function Profile(?string $userId = null){
-        $user = User::findOrFail($userId ? base64_decode($userId) : auth()->id());
+        $user = User::with(['userContacts'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
         return Inertia::render('Auth/Profile', ['user' => $user]);
     }
 
     public function EditProfile(?string $userId = null){
-        $user = $userId ? User::find(base64_decode($userId)) : auth()->user();
+        $user = $userId ? User::with(['userContacts'])->find(base64_decode($userId)) : auth()->user();
         return Inertia::render('Auth/EditBasicProfile', ['user' => $user]);
     }
 
@@ -85,14 +89,51 @@ class UserController extends Controller
         ]);
 
         try{
-            $user = User::find(base64_decode($userId));
-            $user->alternate_phone = array_merge($user->alternate_phone ?? [], [$request->phone]);
-            $user->save();
+            $user = User::findOrFail(base64_decode($userId));
+            UserContact::create(['user_id' => $user->id, 'phone' => $request->phone]);
             Session::flash('success', 'Phone number added');
         }catch(\Throwable $th){
             Log::error("Fail to add new phone number in user profile (user_id: $user->id) due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while adding the phone number! Reverted the data back");
         }
+    }
 
+    public function sendOtpToContact(Request $request){
+        $request->validate([
+            'type' => 'required|in:phone,email',
+            'value' => array_merge(['required'], $request->type == 'phone' ? ['integer', 'max:999999999999'] : ['email'])
+        ]);
+        try{
+            $otp = $this->generateOtp("for-{$request->type}:{$request->value}");
+            if($request->type == 'email') $this->sendOtpViaEmail($otp);
+            else $this->sendOtpViaSMS($otp);
+
+            return ['status' => true, 'message' => "A OTP has been sent to your {$request->type}"];
+        }catch(\Throwable $th){
+            Log::error("Fail to send OTP to the user via {$request->type} due to: {$th->getMessage()}");
+            return ['status' => false, 'message' => 'Something went wrong while sending the OTP, please try again later'];
+        }
+    }
+
+    public function verifyOtpAndSaveContact(Request $request, $userId){
+        $this->setCachePostFix("for-{$request->type}:{$request->value}");
+        $request->validate([
+            'type' => 'required|in:phone,email',
+            'value' => array_merge(['required'], $request->type == 'phone' ? ['integer', 'max:999999999999'] : ['email']),
+            'otp' => ['required', 'max:999999', 'min:000000', "in:{$this->getOtp()}"]
+        ]);
+
+        try{
+            $user = User::findOrFail(base64_decode($userId));
+            if($this->hasOtpExists() && $this->matchOtp($request->otp)){
+                UserContact::create(['user_id' => $user->id, $request->type => $request->value, 'verified_at' => now()]);
+                Session::flash('success', "{$request->type} has been added");
+            }else{
+                throw new Exception('OTP has been expired or not matched');
+            }
+        }catch(\Throwable $th){
+            Log::error("Fail to add new contact number in user profile (user_id: $user->id) due to: {$th->getMessage()}");
+            Session::flash('error', "OTP doesn't matches or expired, please try again later");
+        }
     }
 }

@@ -12,7 +12,7 @@ export default function TutoringDetails({ user }) {
 
     return (
         <div className="">
-            <div className="card bg-base-100 w-100 border">
+            <div className="card bg-base-100 w-100 border static">
                 <div className="card-body">
                     <h2 className="card-title mb-4 text-2xl font-bold">Personal Details</h2>
                     <div className="flex flex-wrap">

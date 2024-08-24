@@ -1,16 +1,15 @@
-import Layout from "../../../Layouts/AdminLayout";
 import { useRef, useState } from "react";
+import Table from "../../../Components/Partials/Table";
+import Layout from "../../../Layouts/AdminLayout";
 import { formHandler } from "../../../Helpers/appHelper";
 import { router, useForm } from "@inertiajs/react";
 import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
-import Table from "../../../Components/Partials/Table";
 
-export default function Subjects({subjects, auth}){
+export default function PostPurposes({postPurposes}){
     const defaultFormValues = {
-        subject_id: '',
+        id: '',
         name: '',
-        meta: '',
-        created_by_user_id: auth.id
+        description: '',
     };
     const modelRef = useRef(null);
     const DeleteRef = useRef(null);
@@ -19,11 +18,25 @@ export default function Subjects({subjects, auth}){
     const {processing, post, put, data, setData, errors, reset} = useForm(defaultFormValues);
     const [isEditing, setIsEditing] = useState(false);
 
+    const onSuccess = () => {
+        modelRef.current.close();
+        reset('id', 'name', 'description');
+        setIsEditing(false);
+    }
+
+    const deletePostPurpose = () => {
+        router.delete(route('supadmin.post-purpose.destroy', deletableRowId), {
+            onFinish(){
+                DeleteRef.current.close();
+            }
+        });
+    }
+
     const onRowEdit = (event, row) => {
         setData({
             name: row.name,
-            meta: row.meta,
-            subject_id: row.id
+            description: row.description,
+            id: row.id
         })
         setIsEditing(true);
         modelRef.current.showModal()
@@ -34,28 +47,14 @@ export default function Subjects({subjects, auth}){
         DeleteRef.current.showModal();
     }
 
-    const deleteSubject = () => {
-        router.delete(route('supadmin.subject.destroy', deletableRowId), {
-            onFinish(){
-                DeleteRef.current.close();
-            }
-        });
-    }
-
-    const onSuccess = () => {
-        modelRef.current.close();
-        reset('meta', 'name', 'subject_id');
-        setIsEditing(false);
-    }
-
     return (
-        <Layout title="Subjects"
-            cta={<><button onClick={() => modelRef.current.showModal()} className="btn btn-primary"><i className="bx bx-plus text-lg"></i> Subject</button></>}>
-            <div className="card bg-base-100 shadow">
+        <Layout title="Post Purposes"
+            cta={<><button onClick={() => modelRef.current.showModal()} className="btn btn-primary"><i className="bx bx-plus text-lg"></i> Post Purposes</button></>}>
+            <div className="card bg-white">
                 <div className="card-body">
                     <Table
-                        resource={subjects}
-                        placeholder="No Subjects Found"
+                        resource={postPurposes}
+                        placeholder="No Post Purposes Found"
                         actions={{
                             action:({row}) => {
                                 return (
@@ -66,24 +65,24 @@ export default function Subjects({subjects, auth}){
                                 )
                             }
                         }}
-                    />
+                     />
                 </div>
             </div>
 
             <dialog ref={modelRef} className="modal">
                 <div className="modal-box">
-                    <h3 className="font-bold text-lg">Add Subject</h3>
-                    <form action={isEditing ? route('supadmin.subject.update', data.subject_id) : route('supadmin.subject.store')} onSubmit={formHandler((isEditing ? put : post), onSuccess)}>
+                    <h3 className="font-bold text-lg">Add Post Purpose</h3>
+                    <form action={isEditing ? route('supadmin.post-purpose.update', data.id) : route('supadmin.post-purpose.store')} onSubmit={formHandler((isEditing ? put : post), onSuccess)}>
                         <div className="py-4">
                             <div className="form-control mb-2">
                                 <label htmlFor="name">Name <span className="text-error">*</span></label>
-                                <input value={data.name} onInput={(e) => setData('name', e.target.value)} type="text" className="input input-bordered" id="name" placeholder="Eg: Python / Physics" />
+                                <input value={data.name} onInput={(e) => setData('name', e.target.value)} type="text" className="input input-bordered" id="name" placeholder="A post creation purpose" />
                                 {errors.name && <span className="text-error">{errors.name}</span>}
                             </div>
                             <div className="form-control mb-2">
-                                <label htmlFor="meta" className="mb-1">Description</label>
-                                <textarea value={data.meta} onInput={(e) => setData('meta', e.target.value)} name="meta" id="meta" placeholder="give a brief about the subject, to clarify the users" className="input input-bordered"></textarea>
-                                {errors.meta && <span className="text-error">{errors.meta}</span>}
+                                <label htmlFor="description" className="mb-1">Description</label>
+                                <textarea value={data.description} onInput={(e) => setData('description', e.target.value)} name="description" id="description" placeholder="A brief about the post purpose" className="input input-bordered"></textarea>
+                                {errors.description && <span className="text-error">{errors.description}</span>}
                             </div>
                         </div>
                         <div className="modal-action">
@@ -94,7 +93,7 @@ export default function Subjects({subjects, auth}){
                 </div>
             </dialog>
 
-            <DeleteRowPopup popupRef={DeleteRef} confirmCallback={deleteSubject} />
+            <DeleteRowPopup popupRef={DeleteRef} confirmCallback={deletePostPurpose} />
         </Layout>
     );
 }

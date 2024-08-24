@@ -24,29 +24,34 @@ class PostRequest extends FormRequest
     {
         return [
             'title' => 'required|max:100|string',
+            'user_phone_id' => 'required|exists:user_contacts,id',
+            'address' => 'required|max:100|string',
+            'country_id' => 'required|integer|exists:countries,id',
             'description' => 'required|max:1000|string',
-            'contact' => 'required|numeric|max:10000000000',
-            'language_preferrance' => 'nullable|array',
-            'language_preferrance.*' => 'nullable|exists:languages,id',
-            'gender_preferance' => 'nullable|in:male,female,any',
-            'subjects' => 'required|array',
-            'subjects.*' => 'required|exists:subjects,id',
+            'purpose_id' => 'required|integer|exists:post_purposes,id',
             'level_id' => 'required|exists:levels,id',
-            'purpose' => 'required|in:'.implode(',', array_column(Post::purposes(), 'value')),
+            'subjects_id' => 'required|array',
+            'subjects_id.*' => 'required|exists:subjects,id',
+            'budget_currency_code' => 'required|string|exists:countries,code',
+            'gender_preferance' => 'nullable|in:male,female,any',
             'min_budget' => 'required|numeric|min:0',
-            'max_budget' => 'required|numeric|min:0|gte:min_budget'
+            'max_budget' => 'required|numeric|min:0|gte:min_budget',
+            'language_preferrances_id' => 'nullable|array',
+            'language_preferrances_id.*' => 'nullable|exists:languages,id',
+            'created_by_user_id' => 'nullable|integer|exists:users,id',
         ];
     }
 
     public function attributes(): array{
         return [
             'title' => 'Title',
-            'description' => 'Description',
-            'contact' => 'Contact',
-            'language_preferrance' => 'Language Preferrance',
-            'gender_preferance' => 'Gender Preferrance',
-            'subject_id' => 'Subject',
+            'user_phone_id' => 'Phone Number',
+            'country_id' => 'Country',
+            'purpose_id' => 'Purpose',
             'level_id' => 'Level',
+            'subjects_id' => 'Subject',
+            'language_preferrances_id' => 'Language Preferrance',
+            'gender_preferance' => 'Gender Preferrance',
             'purpose' => 'Purpose',
             'min_budget' => 'Minimum Budget',
             'max_budget' => 'Maximum Budget'

@@ -384,7 +384,7 @@ class CountriesSeeder extends Seeder
                 "name" => "India",
                 "currency" => "Rupees",
                 "code" => "INR",
-                "symbol" => "Rp",
+                "symbol" => "₹",
             ],
             [
                 "id" => "54",

@@ -16,10 +16,6 @@ class LevelController extends Controller
     protected $model = Level::class;
 
     public function index(){
-        if(!request()->inertia() && request()->expectsJson()){
-            return $this->getQueryData();
-        }
-
         return inertia('Admin/Level/Index', [
             'levels' => Grid::of($this->model)
                 ->columns([
@@ -41,7 +37,7 @@ class LevelController extends Controller
 
         try{
             $slug = Str::slug($request->name);
-            $level = Level::create(array_merge($request->only('name', 'group_name', 'tags', 'created_by_user_id'), compact('slug')));
+            $level = $this->model::create(array_merge($request->only('name', 'group_name', 'tags', 'created_by_user_id'), compact('slug')));
             Session::flash('success', "{$level->name} has been added to levels");
         }catch(\Throwable $th){
             Log::error("Fail to create the level due to: {$th->getMessage()}");
@@ -58,7 +54,7 @@ class LevelController extends Controller
         ]);
 
         try{
-            $level = Level::find($levelId)->update($request->only('name', 'group_name', 'tags', 'created_by_user_id'));
+            $level = $this->model::find($levelId)->update($request->only('name', 'group_name', 'tags', 'created_by_user_id'));
             Session::flash('success', "Level has been updated");
         }catch(\Throwable $th){
             Log::error("Fail to update (id: {$levelId}) the level due to: {$th->getMessage()}");
@@ -68,7 +64,7 @@ class LevelController extends Controller
 
     public function destroy($levelId){
         try{
-            Level::findOrFail($levelId)?->delete();
+            $this->model::findOrFail($levelId)?->delete();
             Session::flash('success', "Level has been removed");
         }catch(\Throwable $th){
             Log::error("Fail to delete the level (id: {$levelId}) due to: {$th->getMessage()}");

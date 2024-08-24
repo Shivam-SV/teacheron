@@ -32,6 +32,7 @@ export default function level({levels, auth}){
     const onSuccess = () => {
         modelRef.current.close();
         setData(defaultFormValues);
+        setIsEditing(false);
     }
 
     const onRowEdit = (event, row) => {

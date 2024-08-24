@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserContacts extends Model
+class UserContact extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,12 @@ class UserContacts extends Model
         'phone',
         'address',
         'country_id',
+        'verified_at',
     ];
+
+    protected function casts(){
+        return ['verified_at' => 'date'];
+    }
 
     public function country(){
         return $this->belongsTo(Country::class);

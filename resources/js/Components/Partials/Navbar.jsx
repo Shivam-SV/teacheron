@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 
 export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
     const {auth} = usePage().props;
@@ -60,7 +60,7 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
                                     </div>
                                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                         <li><Link href="/profile"><i className="bx bx-user text-xl"></i> Profile</Link></li>
-                                        <li><Link method="post" href="/logout" as="button" ><i className='bx bx-log-out text-xl' ></i> Logout</Link></li>
+                                        <li><Link method="post" href={route('logout')} as="button" ><i className='bx bx-log-out text-xl' ></i> Logout</Link></li>
                                     </ul>
                                 </div>
                             </> :

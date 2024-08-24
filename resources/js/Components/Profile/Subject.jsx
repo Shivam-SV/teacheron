@@ -5,7 +5,7 @@ export default function Subject({ user }) {
     const editmodalRef = useRef(null);
     return (
         <>
-            <div className="card bg-base-100 w-100 border">
+            <div className="card bg-base-100 w-100 border static">
             <div className="card-body">
                 <div className="flex items-center mb-3">
                     <h2 className="card-title text-2xl m-0 font-bold grow">Subjects</h2>
