@@ -53,7 +53,7 @@ Route::get('/tutors', [TutorController::class,'index'])->name('tutors');
 
 Route::prefix('supadmin')->as('supadmin.')->group(function () {
     Route::inertia('/login', 'Admin/Auth/Login')->name('login');
-    Route::post('login', [AdminController::class, 'login'])->name('login');
+    Route::post('login', [App\Http\Controllers\Admin\AdminController::class, 'login'])->name('login');
 
     Route::middleware('auth:admin')->group(function () {
         Route::inertia('/', 'Admin/Home')->name('home');
