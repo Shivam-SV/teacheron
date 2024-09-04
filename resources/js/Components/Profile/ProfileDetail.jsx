@@ -4,7 +4,7 @@ import Experience from "./Experience";
 import Subject from "./Subject";
 import Summary from "./Summary";
 
-export default function ProfileDetail({ user }) {
+export default function ProfileDetail({ user, myprofile }) {
     const locationHash = window.location.hash.replace(new RegExp('[^a-bA-Z0-9]+', 'gi'), '').trim();
     const [tab, setTab] = useState(locationHash || "Summary");
     const updateTab = (tabName) => {
@@ -29,7 +29,7 @@ export default function ProfileDetail({ user }) {
                     <Summary user={user} />
                 </div>
                 <div role="tabpanel" className={"tab-content " + (tab === "Subject" ? 'block' : '')}>
-                    <Subject user={user} />
+                    <Subject user={user} myprofile={myprofile} />
                 </div>
                 <div role="tabpanel" className={"tab-content " + (tab === "Education" ? 'block' : '')}>
                     <Education user={user} />

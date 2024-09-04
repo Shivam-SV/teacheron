@@ -15,8 +15,20 @@ class UserQualification extends Model
         'obtained_score', 'max_score'
     ];
 
-    public function user()
-    {
+    protected $appends = ['avg_percentage'];
+
+    protected function casts(){
+        return [
+            'started_at' => 'date',
+            'ended_at' => 'date'
+        ];
+    }
+
+    public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function getAvgPercentageAttribute(){
+        return number_format($this->obtained_score / $this->max_score * 100, 2);
     }
 }

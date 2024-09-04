@@ -35,3 +35,11 @@ export function placeholderImage(size = '100x100', text = null, color = null){
     if(color) url.searchParams.set('color', color);
     return url.toString();
 }
+
+export function avatarImage(name, color = 'random', size = 64){
+    let url =  new URL('https://ui-avatars.com/api/');
+    if(name) url.searchParams.set('name', name);
+    if(color) url.searchParams.set('background', color);
+    if(size) url.searchParams.set('size', size);
+    return url.toString();
+}

@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Country;
+use Exception;
 use App\Models\User;
-use App\Models\UserContact;
-use App\Models\UserHaveSubject;
 use Inertia\Inertia;
+use App\Models\UserContact;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use App\Models\UserHaveSubject;
+use App\Models\UserQualification;
+use App\Traits\InteractWithOtp;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Traits\HasUserAuthentications;
-use App\Traits\InteractWithOtp;
-use Exception;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
@@ -23,13 +26,14 @@ class UserController extends Controller
     protected $admin = false;
 
     public function Profile(?string $userId = null){
-        $user = User::with(['userContacts'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
+        $user = User::with(['userContacts', 'userSubjects', 'qualifications'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
         return Inertia::render('Auth/Profile', ['user' => $user]);
     }
 
     public function EditProfile(?string $userId = null){
         $user = $userId ? User::with(['userContacts'])->find(base64_decode($userId)) : auth()->user();
-        return Inertia::render('Auth/EditBasicProfile', ['user' => $user]);
+        $countries = Country::get();
+        return Inertia::render('Auth/EditBasicProfile', compact('user', 'countries'));
     }
 
     public function UpdateBasicDetails(Request $request,?string $userId = null){
@@ -41,6 +45,7 @@ class UserController extends Controller
             'gender' => "required|in:male,female,not specified",
             'bio' => 'nullable|string',
             'address' => 'nullable|string',
+            'country_id' => 'required|exists:countries,id',
             'alternate_emails' => 'nullable',
             'alternate_phone' => 'nullable',
         ]);
@@ -48,7 +53,7 @@ class UserController extends Controller
         try{
             $alternateEmails = !empty($request->alternate_emails) ? (is_array($request->alternate_emails) ? $request->alternate_emails : array_map('trim',explode(',',$request->alternate_emails))) : [];
             $alternatePhones = !empty($request->alternate_phone) ? (is_array($request->alternate_phone) ? $request->alternate_phone : array_map('trim',explode(',',$request->alternate_phone))) : [];
-            $user->update(array_merge($request->only('name', 'email', 'date_of_birth', 'gender', 'address', 'bio'), ['alternate_emails' => $alternateEmails,'alternate_phone' => $alternatePhones]));
+            $user->update(array_merge($request->only('name', 'email', 'date_of_birth', 'gender', 'address', 'bio', 'country_id'), ['alternate_emails' => $alternateEmails,'alternate_phone' => $alternatePhones]));
             Session::flash('success', 'Profile Updated');
             return to_route('profile');
         }catch(\Throwable $th){
@@ -60,25 +65,51 @@ class UserController extends Controller
     public function UpdateSubjects(Request $request, $userId){
         $request->validate([
             'userSubjects.*.subject_id' => 'required|numeric|distinct|exists:subjects,id',
-            'userSubjects.*.level_from_id' => 'required|numeric|distinct|exists:levels,id|different:userSubjects.*.level_to_id',
-            'userSubjects.*.level_to_id' => 'required|numeric|distinct|exists:levels,id',
+            'userSubjects.*.levels_id' => 'required|array',
+            'userSubjects.*.levels_id.*' => 'required|numeric|distinct|exists:levels,id'
         ]);
 
         try{
-            $user = User::with('subjects')->find(base64_decode($userId));
-
+            DB::beginTransaction();
+            $user = User::with('userSubjects')->find(base64_decode($userId));
             # Removing the removed subjects
-            $deletableRows = array_intersect(array_column($request->userSubjects, 'subject_id'), $user->subjects->select('subject_id')->toArray());
+            $deletableRows = array_intersect(array_column($request->userSubjects, 'subject_id'), $user->userSubjects->select('subject_id')->toArray());
             if(!empty($deletableRows)) UserHaveSubject::whereIn('subject_id', $deletableRows)->where('user_id', $user->id)->delete();
 
             # Store the updated subjects
             foreach($request->userSubjects as $index => $userSubject){
-                UserHaveSubject::updateOrCreate(['user_id' => $user->id, 'subject_id' => $userSubject['subject_id']], Arr::only($userSubject, ['level_from_id', 'level_to_id']));
+                UserHaveSubject::updateOrCreate(['user_id' => $user->id, 'subject_id' => $userSubject['subject_id']])->levels()->sync(array_map(fn($l) => ['level_id' => $l],$userSubject['levels_id']));
             }
             Session::flash('success', 'Profile Updated');
+            DB::commit();
             return to_route('profile');
         }catch(\Throwable $th){
             Log::error("Fail to update subjects user profile (user_id: $user->id) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the profile! Reverted the data back");
+        }
+    }
+
+    public function UpdateEducations(Request $request, $userId){
+        $request->validate([
+            'education.*.name' => 'required|string|max:50',
+            'education.*.institute_name' => 'required|string|max:50',
+            'education.*.started_at' => 'required|date|date_format:Y-m',
+            'education.*.ended_at' => 'required|date|date_format:Y-m',
+            'education.*.obtained_score' => 'required|numeric|lt:education.*.max_score',
+            'education.*.max_score' => 'required|numeric|gt:education.*.obtained_score',
+            'education.*.user_id' => 'required|numeric|exists:users,id',
+            'education.*.id' => 'nullable|numeric|exists:user_qualifications,id',
+        ]);
+
+        try{
+            DB::beginTransaction();
+            $user = User::find(base64_decode($userId));
+
+            foreach($request->education as $education) UserQualification::updateOrCreate(Arr::only($education, ['user_id', 'id']), $education);
+            Session::flash('success', 'Profile Updated');
+            DB::commit();
+        }catch(\Throwable $th){
+            Log::error("Fail to update education user profile (user_id: $user->id) due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while updating the profile! Reverted the data back");
         }
     }

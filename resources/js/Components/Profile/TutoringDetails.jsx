@@ -4,8 +4,8 @@ export default function TutoringDetails({ user }) {
     const UserDetails = [
         { title: 'Email', value: user.email },
         { title: 'Status', value: user.status.ucfirst() },
-        { title: 'Phones', value: user.alternate_phone?.join(', ') || <em className="text-neutral/40">No phone added</em> },
-        { title: 'Date of Birth', value: DateTime.fromISO(user.date_of_birth).toLocaleString(DateTime.DATE_MED) },
+        { title: 'Phones', value: user.alternate_phone?.join(', ') || <em className="text-neutral/20">No phone added</em> },
+        { title: 'Date of Birth', value: user.date_of_birth ? DateTime.fromISO(user.date_of_birth).toLocaleString(DateTime.DATE_MED) : <em className="text-neutral/20">Not Specified</em> },
         { title: 'Price', value: '300-500$/ per hour' },
         { title: 'Experience', value: '2 Years' },
     ];

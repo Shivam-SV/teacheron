@@ -8,8 +8,8 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel='stylesheet' />
+        <link href='{{ asset('assets/boxicons-2.1.4/css/boxicons.min.css') }}' as="style" rel="preload" onload="this.rel='stylesheet'">
         @routes
         @vitereactrefresh
         @vite(['resources/js/app.jsx', 'resources/css/app.css'])

@@ -3,14 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
 class UserHaveSubject extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'subject_id', 'level_from_id', 'level_to_id'];
+    protected $fillable = ['user_id', 'subject_id'];
+
+    protected $with = ['levels', 'subject'];
 
     public function user()
     {
@@ -22,13 +24,7 @@ class UserHaveSubject extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function levelFrom()
-    {
-        return $this->belongsTo(Level::class, 'level_from_id');
-    }
-
-    public function levelTo()
-    {
-        return $this->belongsTo(Level::class, 'level_to_id');
+    public function levels(){
+        return $this->belongsToMany(Level::class, 'user_subject_has_levels');
     }
 }

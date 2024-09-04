@@ -61,4 +61,8 @@ class PostController extends Controller
             return to_route('home');
         }
     }
+
+    public function viewPost($postId){
+        return Inertia::render('Post/View', ['post' => Post::with(['level', 'subjects', 'purpose', 'user', 'languagePreference'])->findOrFail(base64_decode($postId))]);
+    }
 }

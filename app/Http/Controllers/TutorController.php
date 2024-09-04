@@ -10,7 +10,11 @@ class TutorController extends Controller
 {
     public function index(){
         return Inertia::render('Tutors/Index', [
-            'tutors' => User::teacher()->get()
+            'tutors' => User::teacher()->with(['userSubjects'])->get()
         ]);
+    }
+
+    public function view($tutorId){
+        return Inertia::render('Tutors/View', ['tutor' => User::teacher()->with(['userSubjects'])->findOrFail(base64_decode($tutorId))]);
     }
 }

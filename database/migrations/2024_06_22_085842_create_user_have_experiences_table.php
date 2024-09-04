@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('organisation_name', 100)->nullable();
-            $table->string('organisation_type', 40)->nullable();
+            $table->string('organisation_type', 40)->nullable()->comment('Type of the organisation, like textile, IT');
             $table->string('designation', 70)->nullable();
-            $table->unsignedInteger('experience_in_years')->nullable();
-            $table->unsignedInteger('experience_in_months')->nullable();
+            $table->date('started_at')->nullable();
+            $table->date('ended_at')->nullable();
             $table->text('description_about_role')->nullable();
             $table->timestamps();
             $table->softDeletes();

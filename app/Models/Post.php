@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Enums\PostPurposes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
@@ -17,7 +20,7 @@ class Post extends Model
         'max_budget', 'budget_currency_code',
     ];
 
-    protected $appends = ['price'];
+    protected $appends = ['budget', 'posted_since'];
 
     public function user(){
         return $this->belongsTo(User::class, 'created_by_user_id');
@@ -43,11 +46,15 @@ class Post extends Model
         return $this->belongsTo(PostPurpose::class);
     }
 
-    public function getPriceAttribute(){
-        return "{$this->min_budget} - {$this->max_budget}";
+    public function getBudgetAttribute(){
+        return intval($this->min_budget) . " - " . intval($this->max_budget);
     }
 
     public function country(){
         return $this->belongsTo(Country::class);
+    }
+
+    public function getPostedSinceAttribute(){
+        return Carbon::parse($this->created_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW);
     }
 }

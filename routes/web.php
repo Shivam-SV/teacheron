@@ -26,21 +26,30 @@ Route::get('/google/authenticateUser', [UserController::class, 'authenticateGoog
 
 
 # Profile Routes
-Route::get('/profile/{userId?}', [UserController::class, 'Profile'])->name('profile');
-Route::get('/profile/{userId?}/edit-basic', [UserController::class, 'EditProfile'])->name('profile.edit-basic');
-Route::post('/profile/{userId?}/update-basic', [UserController::class, 'UpdateBasicDetails'])->name('profile.update-basic');
-Route::post('/profile/{userId?}/update-subjects', [UserController::class, 'UpdateSubjects'])->name('profile.update-subjects');
-Route::post('/profile/{userId?}/add-phone-number', [UserController::class, 'AddPhoneNumber'])->name('profile.add-phone-number');
-Route::post('/profile/{userId?}/send-otp-to-contact', [UserController::class, 'sendOtpToContact'])->name('profile.send-otp-to-contact');
-Route::post('/profile/{userId?}/verify-otp-and-save-contact', [UserController::class, 'verifyOtpAndSaveContact'])->name('profile.verify-otp-and-save-contact');
+Route::group(['prefix' => 'profile','middleware' => 'auth'], function(){
+    Route::get('/{userId?}', [UserController::class, 'Profile'])->name('profile');
+    Route::get('/{userId?}/edit-basic', [UserController::class, 'EditProfile'])->name('profile.edit-basic');
+    Route::post('/{userId?}/update-basic', [UserController::class, 'UpdateBasicDetails'])->name('profile.update-basic');
+    Route::post('/{userId?}/add-phone-number', [UserController::class, 'AddPhoneNumber'])->name('profile.add-phone-number');
+    Route::post('/{userId?}/send-otp-to-contact', [UserController::class, 'sendOtpToContact'])->name('profile.send-otp-to-contact');
+    Route::post('/{userId?}/verify-otp-and-save-contact', [UserController::class, 'verifyOtpAndSaveContact'])->name('profile.verify-otp-and-save-contact');
+
+    Route::post('/{userId?}/update-subjects', [UserController::class, 'UpdateSubjects'])->name('profile.update-subjects');
+    Route::post('/{userId?}/update-educations', [UserController::class, 'UpdateEducations'])->name('profile.update-educations');
+
+});
 
 # Post Routes
-Route::get('/new-post', [PostController::class, 'createPost'])->name('new-post');
-Route::post('/post/store', [PostController::class, 'storePost'])->name('post.store');
+Route::group(['middleware' => 'auth'], function(){
+    Route::get('/new-post', [PostController::class, 'createPost'])->name('new-post');
+    Route::post('/post/store', [PostController::class, 'storePost'])->name('post.store');
+});
 Route::get('/posts', [PostController::class, 'index'])->name('posts');
+Route::get('/post/{postId}', [PostController::class, 'viewPost'])->name('post.view');
 
 # Teachers Routes
 Route::get('/tutors', [TutorController::class,'index'])->name('tutors');
+Route::get('/tutor/{tutorId}', [TutorController::class, 'view'])->name('tutor');
 
 
 /**
@@ -57,21 +66,18 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
 
     Route::middleware('auth:admin')->group(function () {
         Route::inertia('/', 'Admin/Home')->name('home');
-
-        // subject
         Route::resource('/subject', App\Http\Controllers\Admin\SubjectController::class, ['except' => ['create', 'edit']]);
         Route::resource('/level', App\Http\Controllers\Admin\LevelController::class, ['except' => ['create', 'edit']]);
         Route::resource('/post-purpose', App\Http\Controllers\Admin\PostPurposesController::class, ['except' => ['create', 'edit']]);
         Route::resource('/teacher', App\Http\Controllers\Admin\TeacherController::class, ['except' => ['create', 'edit']]);
         Route::resource('/student', App\Http\Controllers\Admin\StudentController::class, ['except' => ['create', 'edit']]);
         Route::resource('/posts', App\Http\Controllers\Admin\PostController::class, ['except' => ['create', 'edit']]);
-
     });
 });
 
 
 # fetch Routes
 Route::group(['prefix' => '/api-v1', 'as' => 'api.'], function(){
-    Route::get('subjects', [SubjectController::class, 'getSubjects'])->name('subjects');
-    Route::get('levels', [LevelController::class, 'getLevels'])->name('levels');
+    Route::get('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'getSubjects'])->name('subjects');
+    Route::get('levels', [App\Http\Controllers\Admin\LevelController::class, 'getLevels'])->name('levels');
 });

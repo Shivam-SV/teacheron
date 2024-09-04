@@ -72,12 +72,9 @@ class User extends Authenticatable
         return $this->hasOne(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
     }
 
-    public function subjects()
+    public function userSubjects()
     {
-        return $this->belongsToMany(Subject::class, 'user_have_subjects')
-            ->withPivot('level_from_id', 'level_to_id')
-            ->using(UserHaveSubject::class)
-            ->withTimestamps();
+        return $this->hasMany(UserHaveSubject::class);
     }
 
     public function country()
@@ -104,6 +101,10 @@ class User extends Authenticatable
 
     public function alternateAddresses(){
         return $this->userContacts()->whereNotNull('address');
+    }
+
+    public function qualifications(){
+        return $this->hasMany(UserQualification::class);
     }
 
     # role scopes

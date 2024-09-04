@@ -1,7 +1,8 @@
 import { useRef } from "react"
 import SubjectsForm from "./Forms/Subjects";
+import { avatarImage } from "../../Helpers/appHelper";
 
-export default function Subject({ user }) {
+export default function Subject({ user, myprofile }) {
     const editmodalRef = useRef(null);
     return (
         <>
@@ -9,48 +10,18 @@ export default function Subject({ user }) {
             <div className="card-body">
                 <div className="flex items-center mb-3">
                     <h2 className="card-title text-2xl m-0 font-bold grow">Subjects</h2>
-                    <button className="btn btn-ghost btn-sm" onClick={() => editmodalRef.current.showModal()} >Edit Subjects</button>
+                    {myprofile && <button className="btn btn-ghost btn-sm" onClick={() => editmodalRef.current.showModal()} >Edit Subjects</button>}
                 </div>
-
-                <div className="grid grid-cols-12">
-                    {user?.subjects?.length > 0 ? user.subjects.map() : <></>}
-                    <div className="col-span-12 md:col-span-6 py-2">
-                        <div className="flex bg-base-100 items-center">
-                            <img
-                                src="https://placehold.co/100x100?text=S"
-                                alt="Movie" className="border-1 rounded-full border-white w-12 h-12" />
-                            <div className="p-2 px-4 grow">
-                                <h3 className="text-3lg font-bold mb-0">Science</h3>
-                                <p>Beginners to Intermediate</p>
-                            </div>
+                <div className="flex flex-wrap items-center gap-2">
+                    {
+                        user?.user_subjects?.length > 0 ? user?.user_subjects?.map(us => {
+                            return <div key={us.id} className="bg-primary rounded-full text-sm text-primary-content flex items-center py-1 px-2">
+                            <img src={avatarImage(us.subject.name, 'random', 24)} className="rounded-full mr-1" alt="" />
+                            <span className="mr-1">Python</span>
                         </div>
-                    </div>
-
-                    <div className="col-span-12 md:col-span-6 py-2">
-                        <div className="flex bg-base-100 items-center">
-                            <img
-                                src="https://placehold.co/100x100?text=M"
-                                alt="Movie" className="border-1 rounded-full border-white w-12 h-12" />
-                            <div className="p-2 px-4 grow">
-                                <h3 className="text-3lg font-bold mb-0">Mathematics</h3>
-                                <p>Inremediate to Advance</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-span-12 md:col-span-6 py-2">
-                        <div className="flex bg-base-100 items-center">
-                            <img
-                                src="https://placehold.co/100x100?text=S"
-                                alt="Movie" className="border-1 rounded-full border-white w-12 h-12" />
-                            <div className="p-2 px-4 grow">
-                                <h3 className="text-3lg font-bold mb-0">Science</h3>
-                                <p>Beginners to Intermediate</p>
-                            </div>
-                        </div>
-                    </div>
+                        }) : <em className="text-neutral/50">No Subject Added</em>
+                    }
                 </div>
-
             </div>
         </div>
         <dialog className="modal" ref={editmodalRef}>
