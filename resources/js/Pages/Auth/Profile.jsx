@@ -2,6 +2,7 @@ import PostList from "../../Components/Profile/PostList";
 import ProfileDetail from "../../Components/Profile/ProfileDetail";
 import ProfileHero from "../../Components/Profile/ProfileHero";
 import TutoringDetails from "../../Components/Profile/TutoringDetails";
+import WalletDetails from "../../Components/Profile/WalletDetails";
 import Layout from "../../Layouts/AppLayout";
 
 export default function Profile({ user }) {
@@ -16,6 +17,7 @@ export default function Profile({ user }) {
                         {user?.roles[0]?.name === 'teacher' && <ProfileDetail user={user} myprofile={true} />}
                     </div>
                     <div className="col-span-12 lg:col-span-4">
+                        <WalletDetails user={user} />
                         <TutoringDetails user={user} />
                     </div>
                 </div>

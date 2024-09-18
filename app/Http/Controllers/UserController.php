@@ -26,7 +26,7 @@ class UserController extends Controller
     protected $admin = false;
 
     public function Profile(?string $userId = null){
-        $user = User::with(['userContacts', 'userSubjects', 'qualifications'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
+        $user = User::with(['userContacts', 'userSubjects', 'qualifications', 'country'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
         return Inertia::render('Auth/Profile', ['user' => $user]);
     }
 

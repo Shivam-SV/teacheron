@@ -72,6 +72,9 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
         Route::resource('/teacher', App\Http\Controllers\Admin\TeacherController::class, ['except' => ['create', 'edit']]);
         Route::resource('/student', App\Http\Controllers\Admin\StudentController::class, ['except' => ['create', 'edit']]);
         Route::resource('/posts', App\Http\Controllers\Admin\PostController::class, ['except' => ['create', 'edit']]);
+
+        // Teacher routes
+        Route::post('teacher/fill-wallet', [App\Http\Controllers\Admin\TeacherController::class, 'fillWallet'])->name('teacher.fill-wallet');
     });
 });
 

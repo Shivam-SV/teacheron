@@ -27,7 +27,7 @@ export default function Table({ resource, placeholder, actions }) {
 
     const ActionComponent = ({actionName, row}) => {
         const Action = actions[actionName];
-        return Action ? <Action row={row} /> : <><p>Lan fad lo</p></>;
+        return Action ? <Action row={row} /> : <></>;
     }
 
     return (
