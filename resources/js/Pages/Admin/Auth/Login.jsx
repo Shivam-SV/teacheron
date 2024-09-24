@@ -1,6 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import Layout from "../../../Layouts/AdminAuthLayout";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 
 export default function login(){
     const {data, setData, post, processing, errors} = useForm({

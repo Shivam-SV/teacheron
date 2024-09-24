@@ -1,8 +1,15 @@
-import { avatarImage } from "../../Helpers/appHelper";
+import { useState } from "react";
+import { avatarImage } from "../../_utils/commons";
 import Layout from "../../Layouts/AppLayout";
+import { savePost, unsavePost } from "../../_utils/apis";
 
 export default function ViewPost({post}){
-    console.log(post);
+    const [isSaved, setIsSaved] = useState(post?.saves?.length > 0);
+    const handleSavePost = (event) => {
+        event.preventDefault();
+        if(isSaved) unsavePost(btoa(post.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+        else savePost(btoa(post.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+    }
     return (
         <Layout>
             <div className="max-w-[1000px] mx-auto border-neutral/30 shadow p-2 my-4">
@@ -13,7 +20,7 @@ export default function ViewPost({post}){
                             <h1 className="lg:text-5xl md:text-3xl text-2xl font-bold">{post.title}</h1>
                             <p className="text-sm text-neutral/40">{post.posted_since}</p>
                         </div>
-                        <button className='btn btn-ghost text-lg btn-sm tooltip' data-tip="Save for later"><i className='bx bx-bookmark' ></i></button>
+                        <button className='btn btn-ghost text-lg btn-sm tooltip' data-tip={isSaved ? "Saved":"Save for later"} onClick={handleSavePost} ><i className={isSaved? 'bx bxs-bookmark' : 'bx bx-bookmark'} ></i></button>
                         <button className="btn btn-sm btn-primary"><i className='bx bxs-dollar-circle text-yellow-400 text-lg'></i> {Math.abs(post.price)}</button>
                     </div>
                     <div className="flex flex-wrap gap-1 my-2">

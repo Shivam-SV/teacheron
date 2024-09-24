@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import {placeholderImage} from '../../Helpers/appHelper';
+import {placeholderImage} from '../../_utils/commons';
 
 export default function ProfileHero({ user, myprofile }) {
     console.log(user);

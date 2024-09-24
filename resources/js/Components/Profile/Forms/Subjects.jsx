@@ -1,6 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 import Select from "react-select";
 
 export default function SubjectsForm({user, onSubmit}){

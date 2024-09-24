@@ -1,8 +1,8 @@
 import Layout from "../../../Layouts/AdminLayout";
 import { useRef, useState } from "react";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 import { router, useForm } from "@inertiajs/react";
-import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
+import Confirm from "../../../Components/Partials/Confirm";
 import Table from "../../../Components/Partials/Table";
 
 export default function Subjects({subjects, auth}){
@@ -94,7 +94,7 @@ export default function Subjects({subjects, auth}){
                 </div>
             </dialog>
 
-            <DeleteRowPopup popupRef={DeleteRef} confirmCallback={deleteSubject} />
+            <Confirm popupRef={DeleteRef} confirmCallback={deleteSubject} type='error' iconClass="bx-trash" title="Are you sure?" message="Deleting this subject will also delete all the related data." />
         </Layout>
     );
 }

@@ -15,6 +15,7 @@ use App\Models\PostPurpose;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Throwable;
 
 class PostController extends Controller
 {
@@ -22,7 +23,7 @@ class PostController extends Controller
 
     public function index(Request $request){
         return inertia('Post/Index', [
-            'posts' => $this->model::with(['subjects', 'languagePreference','country'])->paginate(10)
+            'posts' => $this->model::with(['subjects', 'languagePreference','country', 'saves' => fn($query) => $query->where('user_id', auth()->id())])->paginate(10)
         ]);
     }
 
@@ -64,5 +65,46 @@ class PostController extends Controller
 
     public function viewPost($postId){
         return Inertia::render('Post/View', ['post' => Post::with(['level', 'subjects', 'purpose', 'user', 'languagePreference'])->findOrFail(base64_decode($postId))]);
+    }
+
+    public function savePost($postId){
+        try{
+            $post = Post::findOrfail(base64_decode($postId));
+            $post->savePost();
+            return ['status' => true, 'message' => 'Post saved for later'];
+        }catch(Throwable $th){
+            Log::error("Fail to save the post (post_id: {$post->id}) due to: {$th->getMessage()}");
+            return ['status' => false, 'message' => 'Oops! we faced something wrong while saving the post! Please try again later'];
+        }
+    }
+
+    public function unsavePost($postId){
+        try{
+            $post = Post::findOrfail(base64_decode($postId));
+            $post->unsavePost();
+            return ['status' => true, 'message' => 'Post removed from saved posts'];
+        }catch(Throwable $th){
+            Log::error("Fail to unsave the post (post_id: {$post->id}) due to: {$th->getMessage()}");
+            return ['status' => false, 'message' => 'Oops! we faced something wrong while unsaving the post! Please try again later'];
+        }
+    }
+
+    public function buyPost($postId){
+        try{
+            $post = Post::findOrfail(base64_decode($postId));
+            $user = auth()->user();
+            if($user->wallet_balance < $post->price) return ['status' => false, 'message' => 'You do not have enough balance to buy this post'];
+
+            # Debiting user wallet
+            $user->debitWallet($post->price);
+
+            # Adding post to user's purchased posts
+            $user->purchasedPosts()->attach($post, ['price' => $post->price, 'purchase_date' => now()]);
+
+            return ['status' => true, 'message' => 'Post bought successfully'];
+        }catch(Throwable $th){
+            Log::error("Fail to buy the post (post_id: {$post->id}) due to: {$th->getMessage()}");
+            return ['status' => false, 'message' => 'Oops! Something stuck while buying the post! Please try again later'];
+        }
     }
 }

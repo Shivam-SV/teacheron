@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import Table from "../../../Components/Partials/Table";
 import Layout from "../../../Layouts/AdminLayout";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 import { router, useForm } from "@inertiajs/react";
-import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
+import Confirm from "../../../Components/Partials/Confirm";
 
 export default function PostPurposes({postPurposes}){
     const defaultFormValues = {
@@ -93,7 +93,7 @@ export default function PostPurposes({postPurposes}){
                 </div>
             </dialog>
 
-            <DeleteRowPopup popupRef={DeleteRef} confirmCallback={deletePostPurpose} />
+            <Confirm popupRef={DeleteRef} onConfirm={deletePostPurpose} type='error' iconClass="bx-trash" title="Are you sure?" message="Deleting this post purpose will also delete the post purposes under the posts associated with it." />
         </Layout>
     );
 }

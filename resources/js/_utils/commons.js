@@ -26,7 +26,7 @@ export function formHandler(RequestCallback, successCallback = null){
 }
 
 function HandleFormError(...args){
-    console.log(args);
+    console.error(args);
 }
 
 export function placeholderImage(size = '100x100', text = null, color = null){

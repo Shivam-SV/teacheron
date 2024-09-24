@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 import { DateTime } from "luxon";
 
 export default function EducationForm({user, onSuccess}){

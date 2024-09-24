@@ -1,6 +1,6 @@
 import { useForm } from "@inertiajs/react";
 import { useState } from "react";
-import { formHandler } from "../../Helpers/appHelper";
+import { formHandler } from "../../_utils/commons";
 
 export default function RegisterCard({roles}) {
     const { data, setData, post, processing, errors } = useForm({

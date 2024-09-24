@@ -1,7 +1,7 @@
 import { useForm, usePage } from "@inertiajs/react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 import { useState } from "react";
 
 export default function Contact(){

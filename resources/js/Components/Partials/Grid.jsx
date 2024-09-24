@@ -1,5 +1,5 @@
 import { usePage } from "@inertiajs/react";
-import { appendActionColumn, defaultActionButtons, MakePaginationComponent, rowsFetcher } from "../../Helpers/gridHelper";
+import { appendActionColumn, defaultActionButtons, MakePaginationComponent, rowsFetcher } from "../../_utils/gridHelper";
 export default function Grid({columns, url, placeholder, hydration, haveActions, onRowEdit, onRowDelete, onRowsRender}){
     const {defaultPageSize, pageSizes} = usePage().props
     columns = haveActions ? appendActionColumn(columns) : columns;

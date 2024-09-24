@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import 'animate.css';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
-import "./Helpers/prototypeHelpers.js";
+import "./_utils/prototypes.js";
 
 createInertiaApp({
     title: title => `${title} - TeacherOn`,

@@ -1,5 +1,5 @@
 import { router, useForm } from "@inertiajs/react";
-import { formHandler } from "../../../Helpers/appHelper";
+import { formHandler } from "../../../_utils/commons";
 import { useEffect } from "react";
 
 export default function CreatePayment({userId, onSuccess}){

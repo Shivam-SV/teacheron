@@ -65,7 +65,6 @@ class TeacherController extends Controller{
             // DB::commit();
             Session::flash('success', "Payment has been added to the user wallet");
         }catch(Exception $th){
-            dd($th);
             Log::error("Fail to add the payment in user id ({$request->user_id}) due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while adding the payment! Reverted the data back");
         }

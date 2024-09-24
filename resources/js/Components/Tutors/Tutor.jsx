@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react";
-import { avatarImage } from "../../Helpers/appHelper";
+import { avatarImage } from "../../_utils/commons";
 import Ratings from "../Elements/Ratings";
 
 export default function Tutor({tutor}){

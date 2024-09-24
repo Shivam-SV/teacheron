@@ -17,7 +17,7 @@ trait PostHaveCustomMutators{
         return $this;
     }
 
-    public function removeSavedPost($user = null){
+    public function unsavePost($user = null){
         PostSave::where('post_id', $this->id)->where('user_id', $user?->id ?? auth()->id())->delete();
         return $this;
     }

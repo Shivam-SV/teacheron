@@ -1,6 +1,6 @@
 import { useRef } from "react"
 import SubjectsForm from "./Forms/Subjects";
-import { avatarImage } from "../../Helpers/appHelper";
+import { avatarImage } from "../../_utils/commons";
 
 export default function Subject({ user, myprofile }) {
     const editmodalRef = useRef(null);

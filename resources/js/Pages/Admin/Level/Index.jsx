@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import Layout from "../../../Layouts/AdminLayout";
 import Grid from "../../../Components/Partials/Grid";
 import { router, useForm } from "@inertiajs/react";
-import { formHandler } from "../../../Helpers/appHelper";
-import DeleteRowPopup from "../../../Components/Partials/DeleteRowPopup";
+import { formHandler } from "../../../_utils/commons";
+import Confirm from "../../../Components/Partials/Confirm";
 import Table from "../../../Components/Partials/Table";
 import CreatableSelect from 'react-select/creatable';
 
@@ -113,7 +113,7 @@ export default function level({levels, auth}){
             </div>
         </dialog>
 
-        <DeleteRowPopup popupRef={DeleteRef} confirmCallback={deleteSubject} />
+        <Confirm popupRef={DeleteRef} onConfirm={deleteSubject} type='error' iconClass="bx-trash" title="Are you sure?" message="Deleteing this level will also delete the levels under the subjects associated with it." />
         </Layout>
     );
 }

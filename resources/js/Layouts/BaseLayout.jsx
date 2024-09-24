@@ -1,5 +1,5 @@
 import { usePage } from "@inertiajs/react";
-import { toastFlasher } from "../Helpers/appHelper";
+import { toastFlasher } from "../_utils/commons";
 
 export default function BaseLayout({children}){
     toastFlasher(usePage().props.flash);

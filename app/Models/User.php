@@ -4,17 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Enums\TransactionType;
-use App\Traits\HasRoles;
 use Illuminate\Support\Arr;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use \Illuminate\Database\Eloquent\Factories\HasFactory,
+        \Illuminate\Notifications\Notifiable,
+        \App\Traits\HasRoles,
+        \App\Traits\HasWallet,
+        \App\Traits\UserHaveRelations;
 
     /**
      * The attributes that are mass assignable.
@@ -61,53 +61,6 @@ class User extends Authenticatable
 
     protected $appends = ['wallet_balance'];
 
-    public function loginLogs(){
-        return $this->hasMany(UserLoginLog::class);
-    }
-
-    public function verifiedBy(){
-        return $this->belongsTo(User::class, 'verified_by');
-    }
-
-    public function profile(){
-        return $this->hasOne(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
-    }
-
-    public function userSubjects(){
-        return $this->hasMany(UserHaveSubject::class);
-    }
-
-    public function country(){
-        return $this->belongsTo(Country::class);
-    }
-
-    public function posts(){
-        return $this->hasMany(Post::class, 'created_by_user_id');
-    }
-
-    public function userContacts(){
-        return $this->hasMany(UserContact::class);
-    }
-
-    public function phoneNumbers(){
-        return $this->userContacts()->whereNotNull('phone');
-    }
-
-    public function alternateEmails(){
-        return $this->userContacts()->whereNotNull('email');
-    }
-
-    public function alternateAddresses(){
-        return $this->userContacts()->whereNotNull('address');
-    }
-
-    public function qualifications(){
-        return $this->hasMany(UserQualification::class);
-    }
-
-    public function wallet(){
-        return $this->hasMany(Wallet::class);
-    }
 
     # role scopes
     public function scopeTeacher(){
@@ -118,10 +71,5 @@ class User extends Authenticatable
     }
     public function scopeAdmin(){
         return $this->whereHas('roles', fn($query) => $query->where('name', 'admin'));
-    }
-
-    # custom attrs
-    public function getWalletbalanceAttribute(){
-        return $this->wallet()->where('transaction_type', TransactionType::CREDIT)->sum('amount') - $this->wallet()->where('transaction_type', TransactionType::DEBIT)->sum('amount');
     }
 }

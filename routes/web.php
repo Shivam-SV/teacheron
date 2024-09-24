@@ -46,6 +46,9 @@ Route::group(['middleware' => 'auth'], function(){
 });
 Route::get('/posts', [PostController::class, 'index'])->name('posts');
 Route::get('/post/{postId}', [PostController::class, 'viewPost'])->name('post.view');
+Route::post('/post/{postId}/save', [PostController::class,'savePost'])->name('post.save');
+Route::post('/post/{postId}/unsave', [PostController::class, 'unsavePost'])->name('post.unsave');
+Route::post('/post/{postId}/buy', [PostController::class, 'buyPost'])->name('post.buy');
 
 # Teachers Routes
 Route::get('/tutors', [TutorController::class,'index'])->name('tutors');

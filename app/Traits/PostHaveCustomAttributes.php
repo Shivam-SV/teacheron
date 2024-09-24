@@ -5,8 +5,7 @@ namespace App\Traits;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 
-trait PostHaveCustomAttrbutes{
-    protected $appends = ['budget', 'posted_since', 'impressions_count'];
+trait PostHaveCustomAttributes{
 
     public function getBudgetAttribute(){
         return intval($this->min_budget) . " - " . intval($this->max_budget);

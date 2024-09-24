@@ -10,7 +10,7 @@ class Post extends Model
     use
         SoftDeletes,
         \App\Traits\PostHaveRelations,
-        \App\Traits\PostHaveCustomAttrbutes,
+        \App\Traits\PostHaveCustomAttributes,
         \App\Traits\PostHaveCustomMutators;
 
     protected $fillable = [
@@ -18,5 +18,5 @@ class Post extends Model
         'level_id', 'gender_preference', 'status', 'min_budget',
         'max_budget', 'budget_currency_code',
     ];
-
+    protected $appends = ['budget', 'posted_since', 'impressions_count'];
 }
