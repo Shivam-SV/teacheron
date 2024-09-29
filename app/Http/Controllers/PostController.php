@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Models\Post;
 use Inertia\Inertia;
 use App\Models\Level;
+use App\Models\Country;
 use App\Models\Subject;
 use App\Models\Language;
-use Illuminate\Http\Request;
-use App\Http\Requests\PostRequest;
-use App\Models\Country;
-use App\Models\PostHaveSubjects;
 use App\Models\PostPurpose;
+use App\Models\Conversation;
+use Illuminate\Http\Request;
+use App\Models\PostHaveSubjects;
+use App\Http\Requests\PostRequest;
+use App\Models\PostPurchase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Throwable;
 
 class PostController extends Controller
 {
@@ -71,10 +73,10 @@ class PostController extends Controller
         try{
             $post = Post::findOrfail(base64_decode($postId));
             $post->savePost();
-            return ['status' => true, 'message' => 'Post saved for later'];
+            return response(['status' => true, 'message' => 'Post saved for later']);
         }catch(Throwable $th){
             Log::error("Fail to save the post (post_id: {$post->id}) due to: {$th->getMessage()}");
-            return ['status' => false, 'message' => 'Oops! we faced something wrong while saving the post! Please try again later'];
+            return response(['status' => false, 'message' => 'Oops! we faced something wrong while saving the post! Please try again later'], 500);
         }
     }
 
@@ -82,29 +84,39 @@ class PostController extends Controller
         try{
             $post = Post::findOrfail(base64_decode($postId));
             $post->unsavePost();
-            return ['status' => true, 'message' => 'Post removed from saved posts'];
+            return response(['status' => true, 'message' => 'Post removed from saved posts']);
         }catch(Throwable $th){
             Log::error("Fail to unsave the post (post_id: {$post->id}) due to: {$th->getMessage()}");
-            return ['status' => false, 'message' => 'Oops! we faced something wrong while unsaving the post! Please try again later'];
+            return response(['status' => false, 'message' => 'Oops! we faced something wrong while unsaving the post! Please try again later'], 500);
         }
     }
 
     public function buyPost($postId){
         try{
+            DB::beginTransaction();
             $post = Post::findOrfail(base64_decode($postId));
             $user = auth()->user();
-            if($user->wallet_balance < $post->price) return ['status' => false, 'message' => 'You do not have enough balance to buy this post'];
+            if($user->wallet_balance < $post->price) return response(['status' => false, 'message' => 'You do not have enough balance to buy this post'], 500);
 
             # Debiting user wallet
-            $user->debitWallet($post->price);
+            $user->debitCoins($post->price);
 
             # Adding post to user's purchased posts
-            $user->purchasedPosts()->attach($post, ['price' => $post->price, 'purchase_date' => now()]);
+            $postPurchase = PostPurchase::create(['post_id' => $post->id, 'user_id' => $user->id, 'price' => $post->price, 'purchase_date' => now()]);
 
-            return ['status' => true, 'message' => 'Post bought successfully'];
+            # creatting a new conversational thread for this post
+            $conversation = Conversation::create([
+                'name' => $post->title,
+                'teacher_id' => $user->id,
+                'student_id' => $post->created_by_user_id,
+                'post_purchase_id' => $postPurchase->id,
+            ]);
+
+            DB::commit();
+            return response(['status' => true, 'message' => 'Post bought successfully', 'conversation_id' => $conversation->id]);
         }catch(Throwable $th){
-            Log::error("Fail to buy the post (post_id: {$post->id}) due to: {$th->getMessage()}");
-            return ['status' => false, 'message' => 'Oops! Something stuck while buying the post! Please try again later'];
+            Log::error("Fail to buy the post (post_id: {$post->id}) due to: {$th->getMessage()} - trace: {$th}");
+            return response(['status' => false, 'message' => 'Oops! Something stuck while buying the post! Please try again later'], 500);
         }
     }
 }

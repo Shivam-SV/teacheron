@@ -8,7 +8,7 @@ export default function Layout({children}){
     return (
         <BaseLayout>
             <Navbar sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
-            <main>
+            <main className="h-full">
                 <Sidebar sidebarIsOpen={sidebarIsOpen} setSidebarIsOpen={setSidebarIsOpen} />
                 {children}
             </main>

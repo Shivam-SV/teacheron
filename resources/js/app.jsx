@@ -5,6 +5,7 @@ import 'animate.css';
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
 import "./_utils/prototypes.js";
+import './echo.js';
 
 createInertiaApp({
     title: title => `${title} - TeacherOn`,

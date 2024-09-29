@@ -52,6 +52,7 @@ export default function Navbar({sidebarIsOpen, setSidebarIsOpen}){
                         {
                             auth ?
                             <>
+                                <Link href={route('conversations')} as="button" className="btn btn-ghost"><i class='bx bx-chat align-middle text-lg'></i> Chats</Link>
                                 {auth?.roles[0]?.name === 'student' && <Link href="/new-post" className="btn btn-primary btn-outline"><i className="bx bx-plus text-lg"></i> Post</Link> }
                                 <div className="dropdown dropdown-end">
                                     <div tabIndex={0} role="button" className="btn m-1 group transition-all duration-150 ease-in-out">

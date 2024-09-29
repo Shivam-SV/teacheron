@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import {placeholderImage} from '../../_utils/commons';
-import { savePost, unsavePost } from '../../_utils/apis';
+import { buyPost, savePost, unsavePost } from '../../_utils/apis';
 import { toast } from 'react-toastify';
 import { useRef, useState } from 'react';
 import Confirm from '../Partials/Confirm';
@@ -17,7 +17,8 @@ export default function Post({content}){
 
     const handlePostBuy = (event) => {
         event.preventDefault();
-
+        buyPostRef.current.close();
+        buyPost(btoa(content.id));
     }
     return (
         <>

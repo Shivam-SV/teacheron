@@ -14,7 +14,8 @@ class User extends Authenticatable
         \Illuminate\Notifications\Notifiable,
         \App\Traits\HasRoles,
         \App\Traits\HasWallet,
-        \App\Traits\UserHaveRelations;
+        \App\Traits\UserHaveRelations,
+        \Awobaz\Compoships\Compoships;
 
     /**
      * The attributes that are mass assignable.

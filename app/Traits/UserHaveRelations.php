@@ -8,6 +8,7 @@ use App\Models\Media;
 use App\Models\Wallet;
 use App\Models\Country;
 use App\Models\UserContact;
+use App\Models\PostPurchase;
 use App\Models\UserLoginLog;
 use App\Models\UserHaveSubject;
 use App\Models\UserQualification;
@@ -62,6 +63,10 @@ trait UserHaveRelations{
     }
 
     public function postPurchased(){
-        return $this->hasMany(PostPurchased::class);
+        return $this->hasMany(PostPurchase::class);
+    }
+
+    public function conversation(){
+        return $this->hasMany(Conversation::class, ['teacher_id', 'student_id']);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConversationController;
 use App\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,11 @@ Route::post('/post/{postId}/buy', [PostController::class, 'buyPost'])->name('pos
 Route::get('/tutors', [TutorController::class,'index'])->name('tutors');
 Route::get('/tutor/{tutorId}', [TutorController::class, 'view'])->name('tutor');
 
+# Conversations Routes
+Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations');
+Route::get('/conversation/{conversationId}', [ConversationController::class, 'viewConversation'])->name('conversation.view');
+
+
 
 /**
  * -------------------------------------------------------------------------------------------
@@ -86,4 +92,9 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
 Route::group(['prefix' => '/api-v1', 'as' => 'api.'], function(){
     Route::get('subjects', [App\Http\Controllers\Admin\SubjectController::class, 'getSubjects'])->name('subjects');
     Route::get('levels', [App\Http\Controllers\Admin\LevelController::class, 'getLevels'])->name('levels');
+
+    # Conversations Apis
+    Route::get('conversations/{userId?}', [ConversationController::class, 'allConversations'])->name('conversations');
+    Route::get('conversation/{conversationId}/messages', [ConversationController::class, 'loadMessages'])->name('conversation.load-messages');
+    Route::post('conversations/{conversationId}/send-message', [ConversationController::class, 'sendMessage'])->name('conversation.send-message');
 });

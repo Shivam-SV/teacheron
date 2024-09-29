@@ -17,9 +17,8 @@ return new class extends Migration
             $table->text('name')->nullable();
             $table->foreignId('teacher_id')->constrained('users');
             $table->foreignId('student_id')->constrained('users');
-            $table->foreigbId('post_purchases_id')->nullable()->constrained('post_purchases');
+            $table->foreignId('post_purchases_id')->nullable()->constrained('post_purchases');
             $table->enum('status', array_column(ConversationStatus::cases(), 'value'))->default('initial');
-            $table->timestamp('last_message_at')->nullable();
             $table->timestamps();
         });
     }
