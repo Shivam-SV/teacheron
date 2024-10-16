@@ -1,7 +1,14 @@
-import { Link } from '@inertiajs/react';
-import { avatarImage } from "../../Helpers/appHelper";
+import { useState } from "react";
+import { savePost, unsavePost } from "../../_utils/apis";
+import { avatarImage } from "../../_utils/commons";
 
 export default function Post({ post, readonly }) {
+    const [isSaved, setIsSaved] = useState(post?.saves?.length > 0);
+    const handleSavePost = (event) => {
+        event.preventDefault();
+        if(isSaved) unsavePost(btoa(post.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+        else savePost(btoa(post.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+    }
     return (
         <div className="max-w-[1000px] mx-auto border-neutral/30 shadow p-2 my-4">
             <div className="mb-6">
@@ -9,11 +16,14 @@ export default function Post({ post, readonly }) {
                     <img src={avatarImage(post.title, 'random')} alt="" className='rounded mr-4' />
                     <div className="grow">
                         <h1 className="lg:text-5xl md:text-3xl text-2xl font-bold">{post.title}</h1>
-                        <p className="text-sm text-neutral/40">{post.posted_since}</p>
+                        <div className="flex gap-2">
+                            <p className="text-sm text-neutral/40">{post.posted_since}</p>
+                        </div>
                     </div>
+                    <p className=""><i className='bx bx-show-alt align-middle'></i> {post.impressions_count}</p>
                     {readonly ? '' :
-                        <button className='btn btn-ghost text-lg btn-sm tooltip' data-tip="Save for later"><i className='bx bx-bookmark' ></i></button>}
-                    <button className="btn btn-sm btn-primary"><i className='bx bxs-dollar-circle text-yellow-400 text-lg'></i> {Math.abs(post.price)}</button>
+                        <><button className='btn btn-ghost text-lg btn-sm tooltip' data-tip="Save for later"><i className='bx bx-bookmark align-middle' ></i></button>
+                    <button className="btn btn-sm btn-primary"><i className='bx bxs-dollar-circle text-yellow-400 text-lg'></i> {Math.abs(post.price)}</button></>}
                 </div>
                 <div className="flex flex-wrap gap-1 my-2">
                     <div className="bg-base-200 rounded-full text-xs font-medium flex items-center py-1 px-2">

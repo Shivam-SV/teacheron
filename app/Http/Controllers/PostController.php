@@ -66,7 +66,9 @@ class PostController extends Controller
     }
 
     public function viewPost($postId){
-        return Inertia::render('Post/View', ['post' => Post::with(['level', 'subjects', 'purpose', 'user', 'languagePreference'])->findOrFail(base64_decode($postId))]);
+        $post = Post::with(['level', 'subjects', 'purpose', 'user', 'languagePreference'])->findOrFail(base64_decode($postId));
+        if(auth()->check()) $post->countImpression();
+        return Inertia::render('Post/View', ['post' => $post]);
     }
 
     public function savePost($postId){

@@ -7,7 +7,7 @@ export default function Layout({children, title, cta}){
         <BaseLayout>
             <div className="flex h-screen">
                 <SideBar />
-                <main className="p-4 bg-base-200 grow">
+                <main className="p-4 bg-base-200 w-full">
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h2 className="text-2xl font-extrabold">{title ?? ''}</h2>

@@ -26,6 +26,7 @@ class Post extends Model
         'status',
         'min_budget',
         'max_budget',
+        'price',
         'budget_currency_code',
     ];
 

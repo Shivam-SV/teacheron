@@ -56,8 +56,10 @@ Route::get('/tutors', [TutorController::class,'index'])->name('tutors');
 Route::get('/tutor/{tutorId}', [TutorController::class, 'view'])->name('tutor');
 
 # Conversations Routes
-Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations');
-Route::get('/conversation/{conversationId}', [ConversationController::class, 'viewConversation'])->name('conversation.view');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations');
+    Route::get('/conversation/{conversationId}', [ConversationController::class, 'viewConversation'])->name('conversation.view');
+});
 
 
 
@@ -81,6 +83,8 @@ Route::prefix('supadmin')->as('supadmin.')->group(function () {
         Route::resource('/teacher', App\Http\Controllers\Admin\TeacherController::class, ['except' => ['create', 'edit']]);
         Route::resource('/student', App\Http\Controllers\Admin\StudentController::class, ['except' => ['create', 'edit']]);
         Route::resource('/posts', App\Http\Controllers\Admin\PostController::class, ['except' => ['create', 'edit']]);
+        Route::post('/post/{postId}/update-status', [App\Http\Controllers\Admin\PostController::class, 'updateStatus'])->name('posts.update-status');
+        Route::post('/post/{postId}/update-price', [App\Http\Controllers\Admin\PostController::class, 'updatePrice'])->name('posts.update-price');
 
         // Teacher routes
         Route::post('teacher/fill-wallet', [App\Http\Controllers\Admin\TeacherController::class, 'fillWallet'])->name('teacher.fill-wallet');

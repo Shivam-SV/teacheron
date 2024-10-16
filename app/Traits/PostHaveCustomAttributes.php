@@ -2,24 +2,27 @@
 
 namespace App\Traits;
 
+use App\Enums\PostStatus;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 
 trait PostHaveCustomAttributes
 {
 
-    public function getBudgetAttribute()
-    {
+    public function getBudgetAttribute(){
         return intval($this->min_budget) . " - " . intval($this->max_budget);
     }
 
-    public function getPostedSinceAttribute()
-    {
+    public function getPostedSinceAttribute(){
         return Carbon::parse($this->created_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW);
     }
 
-    public function getImpressionsCountAttribute()
-    {
+    public function getImpressionsCountAttribute(){
         return $this->impressions()->count();
+    }
+
+    # Enum Accessors
+    public static function getStatuses(){
+        return PostStatus::cases();
     }
 }
