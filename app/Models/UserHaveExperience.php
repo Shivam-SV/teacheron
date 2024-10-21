@@ -15,6 +15,13 @@ class UserHaveExperience extends Model
         'experience_in_months', 'description_about_role'
     ];
 
+    protected function casts(){
+        return [
+            'started_at' => 'date',
+            'ended_at' => 'date'
+        ];
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

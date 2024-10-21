@@ -7,6 +7,7 @@ use Exception;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\UserContact;
+use App\Models\UserHaveExperience;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Models\UserHaveSubject;
@@ -26,7 +27,7 @@ class UserController extends Controller
     protected $admin = false;
 
     public function Profile(?string $userId = null){
-        $user = User::with(['userContacts', 'userSubjects', 'qualifications', 'country'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
+        $user = User::with(['userContacts', 'userSubjects', 'qualifications', 'country', 'userExperience'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
         return Inertia::render('Auth/Profile', ['user' => $user]);
     }
 
@@ -110,6 +111,30 @@ class UserController extends Controller
             DB::commit();
         }catch(\Throwable $th){
             Log::error("Fail to update education user profile (user_id: $user->id) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the profile! Reverted the data back");
+        }
+    }
+
+    public function UpdateExperience(Request $request, $userId){
+        $request->validate([
+            'experience.*.organisation_name' => 'required|string|max:100',
+            'experience.*.organisation_type' => 'required|string|max:100',
+            'experience.*.designation' => 'required|string|max:100',
+            'experience.*.started_at' => 'required|date|date_format:Y-m',
+            'experience.*.ended_at' => 'nullable|date|date_format:Y-m',
+            'experience.*.description' => 'nullable|string|max:1000',
+            'experience.*.user_id' => 'required|numeric|exists:users,id',
+            'experience.*.id' => 'nullable|numeric|exists:user_experiences,id',
+        ]);
+
+        try{
+            DB::beginTransaction();
+            $user = User::find(base64_decode($userId));
+            foreach($request->experience as $experience) UserHaveExperience::updateOrCreate(Arr::only($experience, ['user_id', 'id', 'organization_name']), $experience);
+            Session::flash('success', 'Profile Updated');
+            DB::commit();
+        }catch(\Throwable $th){
+            Log::error("Fail to update experience user profile (user_id: $user->id) due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while updating the profile! Reverted the data back");
         }
     }

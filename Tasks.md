@@ -26,3 +26,20 @@
 ### Admin related tasks
 -- Adjust the levels table changes in admin side. ~ Done
 -- Add an option to set the teacher price and also a tracking table which tracks the teacher price. 
+
+### Payment related tasks
+-- Add a payment gateway integration.
+-- Add a option to admin to set the payment gateway fees.
+
+### Notification related tasks
+-- Add a notification system to send notifications to users.
+-- Add a option to admin to send notifications to users.
+-- Add an OTP verification system to verify the user's phone number.
+
+### General tasks
+-- Add a privacy policy page.
+-- Add a terms and conditions page.
+-- Add a FAQ page.
+-- Add a feedback page.
+-- Add a contact us page.
+-- Add a about us page.

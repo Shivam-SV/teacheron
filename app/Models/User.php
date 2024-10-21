@@ -62,6 +62,9 @@ class User extends Authenticatable
 
     protected $appends = ['wallet_balance', 'price'];
 
+    public function getPriceAttribute(){
+        return $this->userPrice()->price ?? 0;
+    }
 
     # role scopes
     public function scopeTeacher(){

@@ -3,7 +3,7 @@ import { useRef } from "react"
 import EducationForm from "./Forms/Educations";
 import { DateTime } from "luxon";
 
-export default function Education({ user, myProfile }) {
+export default function Education({ user, myprofile }) {
     const formModalRef = useRef(null);
 
     return (
@@ -12,7 +12,7 @@ export default function Education({ user, myProfile }) {
                 <div className="card-body">
                     <div className="flex items-center mb-3">
                         <h2 className="card-title flex-1 text-2xl font-bold">Education</h2>
-                        {!myProfile || <button className="btn btn-sm btn-ghost" onClick={e => formModalRef.current.showModal()}>Update Education</button>}
+                        {!myprofile || <button className="btn btn-sm btn-ghost" onClick={e => formModalRef.current.showModal()}>Update Education</button>}
                     </div>
                     <div className="p-4 md:p-2">
                         <ul className="timeline timeline-vertical timeline-compact">

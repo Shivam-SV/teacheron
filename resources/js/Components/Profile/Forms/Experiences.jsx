@@ -1,9 +1,11 @@
 import { useForm } from "@inertiajs/react";
+import { formHandler } from "../../../_utils/commons";
+import { DateTime } from "luxon";
 
-export default function ExperienceForm({user}){
-    const defaultExperience = {user_id: user.id, designation: '', started_at: '',ended_at: '', description_about_role: ''};
+export default function ExperienceForm({user, onSuccess}){
+    const defaultExperience = {user_id: user.id, organisation_name: '',organisation_type: '',designation: '', started_at: '',ended_at: '', description_about_role: ''};
     const {data, setData, errors, processing, post, reset} = useForm({
-        experience: user?.experiences?.length > 0 ? [... user.qualifications.map(q => ({...q,ended_at: DateTime.fromISO(q.ended_at).toFormat('yyyy-LL'), started_at: DateTime.fromISO(q.started_at).toFormat('yyyy-LL')}))] :  [{...defaultExperience}]
+        experience: user?.user_experience?.length > 0 ? [... user.user_experience.map(q => ({...q,ended_at: q.ended_at ? DateTime.fromISO(q.ended_at).toFormat('yyyy-LL') : '', started_at: DateTime.fromISO(q.started_at).toFormat('yyyy-LL')}))] :  [{...defaultExperience}]
     });
 
     const updateForm = (key, index, value) => {
@@ -16,28 +18,28 @@ export default function ExperienceForm({user}){
         setData('experience', [...data.experience, {...defaultExperience}]);
     }
     return (
-        <form>
+        <form action={route('profile.update-experience', btoa(user.id))} onSubmit={formHandler(post, onSuccess)}>
             {data?.experience?.length > 0 && data.experience.map((exp, i) => {
                 return(
                     <div className="grid gap-4 grid-cols-12 p-2" key={i}>
                         <div className="col-span-2">
                             <div className="form-control">
-                                {i === 0 && <label htmlFor="organisation_type">Organisation name</label>}
-                                <input className="input input-bordered" type="text" name="organisation_type" id="organisation_type" value={exp.organisation_type} onChange={e => updateForm('organisation_name', i, e.target.value)} />
+                                {i === 0 && <label htmlFor="organisation_name">Organisation name</label>}
+                                <input className="input input-bordered" type="text" name="organisation_name" id="organisation_name" value={exp.organisation_name} onChange={e => updateForm('organisation_name', i, e.target.value)} placeholder="ABC Company" />
                                 { errors && errors[`experience.${i}.organisation_name`] && <span className="text-error">{errors[`experience.${i}.organisation_name`].toString().replace(`experience.${i}.organisation_name`, 'Organisation name')}</span>}
                             </div>
                         </div>
                         <div className="col-span-2">
                             <div className="form-control">
                                 {i === 0 && <label htmlFor="organisation_type">Organisation type</label>}
-                                <input className="input input-bordered" type="text" name="organisation_type" id="organisation_type" value={exp.organisation_type} onChange={e => updateForm('organisation_type', i, e.target.value)} />
+                                <input className="input input-bordered" type="text" name="organisation_type" id="organisation_type" value={exp.organisation_type} onChange={e => updateForm('organisation_type', i, e.target.value)} placeholder="Textile/ IT/ Manufacturing" />
                                 { errors && errors[`experience.${i}.organisation_type`] && <span className="text-error">{errors[`experience.${i}.organisation_type`].toString().replace(`experience.${i}.organisation_type`, 'Organisation type')}</span>}
                             </div>
                         </div>
                         <div className="col-span-2">
                             <div className="form-control">
                                 {i === 0 && <label htmlFor="designation">Designation</label>}
-                                <input className="input input-bordered" type="text" name="designation" id="designation" value={exp.designation} onChange={e => updateForm('designation', i, e.target.value)} />
+                                <input className="input input-bordered" type="text" name="designation" id="designation" value={exp.designation} onChange={e => updateForm('designation', i, e.target.value)} placeholder="Manager/ Supervisor/ Sales Executive" />
                                 { errors && errors[`experience.${i}.designation`] && <span className="text-error">{errors[`experience.${i}.designation`].toString().replace(`experience.${i}.designation`, 'Designation')}</span>}
                             </div>
                         </div>
@@ -52,6 +54,7 @@ export default function ExperienceForm({user}){
                             <div className="form-control">
                                 {i === 0 && <label htmlFor="ended_at">Ended At</label>}
                                 <input className="input input-bordered" type="month" name="ended_at" id="ended_at" value={exp.ended_at} onChange={e => updateForm('ended_at', i, e.target.value)} />
+                                {i === 0 && <small>Leave blank if still working</small>}
                                 { errors && errors[`experience.${i}.ended_at`] && <span className="text-error">{errors[`experience.${i}.ended_at`].toString().replace(`experience.${i}.ended_at`, 'Ended at')}</span>}
                             </div>
                         </div>

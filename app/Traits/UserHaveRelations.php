@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\UserContact;
 use App\Models\Conversation;
 use App\Models\PostPurchase;
+use App\Models\UserHaveExperience;
 use App\Models\UserLoginLog;
 use App\Models\UserHaveSubject;
 use App\Models\UserPrice;
@@ -60,6 +61,10 @@ trait UserHaveRelations{
         return $this->hasMany(UserQualification::class);
     }
 
+    public function userExperience(){
+        return $this->hasMany(UserHaveExperience::class, 'user_id');
+    }
+
     public function wallet(){
         return $this->hasMany(Wallet::class);
     }
@@ -78,9 +83,5 @@ trait UserHaveRelations{
 
     public function userPrice(){
         return $this->userPrices()->latest()->first();
-    }
-
-    public function getPriceAttribute(){
-        return $this->userPrice()->price ?? 0;
     }
 }

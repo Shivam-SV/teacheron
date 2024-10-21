@@ -37,6 +37,7 @@ Route::group(['prefix' => 'profile','middleware' => 'auth'], function(){
 
     Route::post('/{userId?}/update-subjects', [UserController::class, 'UpdateSubjects'])->name('profile.update-subjects');
     Route::post('/{userId?}/update-educations', [UserController::class, 'UpdateEducations'])->name('profile.update-educations');
+    Route::post('/{userId?}/update-experience', [UserController::class, 'UpdateExperience'])->name('profile.update-experience');
 
 });
 
