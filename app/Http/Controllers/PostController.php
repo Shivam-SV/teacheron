@@ -72,8 +72,8 @@ class PostController extends Controller
     }
 
     public function savePost($postId){
+        $post = Post::findOrfail(base64_decode($postId));
         try{
-            $post = Post::findOrfail(base64_decode($postId));
             $post->savePost();
             return response(['status' => true, 'message' => 'Post saved for later']);
         }catch(Throwable $th){
@@ -83,8 +83,8 @@ class PostController extends Controller
     }
 
     public function unsavePost($postId){
+        $post = Post::findOrfail(base64_decode($postId));
         try{
-            $post = Post::findOrfail(base64_decode($postId));
             $post->unsavePost();
             return response(['status' => true, 'message' => 'Post removed from saved posts']);
         }catch(Throwable $th){

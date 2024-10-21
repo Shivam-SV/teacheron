@@ -15,6 +15,7 @@ class User extends Authenticatable
         \App\Traits\HasRoles,
         \App\Traits\HasWallet,
         \App\Traits\UserHaveRelations,
+        \App\Traits\UserCustomMutations,
         \Awobaz\Compoships\Compoships;
 
     /**
