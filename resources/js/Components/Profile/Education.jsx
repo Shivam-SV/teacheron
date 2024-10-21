@@ -3,7 +3,7 @@ import { useRef } from "react"
 import EducationForm from "./Forms/Educations";
 import { DateTime } from "luxon";
 
-export default function Education({ user }) {
+export default function Education({ user, myProfile }) {
     const formModalRef = useRef(null);
 
     return (
@@ -12,11 +12,11 @@ export default function Education({ user }) {
                 <div className="card-body">
                     <div className="flex items-center mb-3">
                         <h2 className="card-title flex-1 text-2xl font-bold">Education</h2>
-                        <button className="btn btn-sm btn-ghost" onClick={e => formModalRef.current.showModal()}>Update Education</button>
+                        {!myProfile || <button className="btn btn-sm btn-ghost" onClick={e => formModalRef.current.showModal()}>Update Education</button>}
                     </div>
                     <div className="p-4 md:p-2">
                         <ul className="timeline timeline-vertical timeline-compact">
-                            {user?.qualifications?.length > 0 && user.qualifications.map((q, i) => {
+                            {user?.qualifications?.length > 0 ? user.qualifications.map((q, i) => {
                                 return (
                                     <li key={i}>
                                         {i == 0 && <hr />}
@@ -33,7 +33,7 @@ export default function Education({ user }) {
                                         <hr />
                                     </li>
                                 );
-                            })}
+                            }) : <i className="text-center text-neutral/50">No education details found.</i>}
                         </ul>
                     </div>
                 </div>

@@ -32,10 +32,10 @@ export default function ProfileDetail({ user, myprofile }) {
                     <Subject user={user} myprofile={myprofile} />
                 </div>
                 <div role="tabpanel" className={"tab-content " + (tab === "Education" ? 'block' : '')}>
-                    <Education user={user} />
+                    <Education user={user} myprofile={myprofile} />
                 </div>
                 <div role="tabpanel" className={"tab-content " + (tab === "Experience" ? 'block' : '')}>
-                    <Experience user={user} />
+                    <Experience user={user} myprofile={myprofile} />
                 </div>
             </div>
 

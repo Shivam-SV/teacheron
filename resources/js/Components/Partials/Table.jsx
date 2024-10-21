@@ -13,7 +13,6 @@ export default function Table({ resource, placeholder, actions }) {
     }
 
     const handleSort = (column, direction) => {
-        console.log(column, direction);
         setQuery({ ...query, sort: {[column]: direction} });
     }
 

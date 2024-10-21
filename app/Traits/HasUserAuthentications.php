@@ -10,6 +10,7 @@ use App\Models\UserHaveRole;
 use App\Models\UserLoginLog;
 use Illuminate\Http\Request;
 use App\Mail\VerifyUserEmail;
+use App\Models\UserPrice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -120,8 +121,9 @@ trait HasUserAuthentications
         $user = User::create(array_merge($request->only('email', 'password', 'name'), ['country_id' => config('defaults.country_id')]));
         UserHaveRole::create(['user_id' => $user->id, 'role_id' => $request->role]);
         DB::commit();
-
         Session()->flash('success', 'Register Successfully');
+
+        if($user->is('teacher')) UserPrice::create(['user_id' => $user->id, 'price' => config('app.default_user_price')]);
         return to_route('send-verification-email', ['userId' => encrypt($user->id)]);
     }
 

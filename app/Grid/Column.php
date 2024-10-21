@@ -2,6 +2,8 @@
 
 namespace App\Grid;
 
+use Illuminate\Support\Arr;
+
 class Column{
 
     const TYPE_TEXT = 'text';
@@ -18,15 +20,24 @@ class Column{
     protected string $sort_by = '';
     protected string $label;
     protected bool $isRelatedColumn = false;
+    protected array $relations = [];
     protected $transformer = null;
 
     public function __construct(
         public string $column,
         public string $type = 'text',
-    ){}
+    ){
+        if(str_contains($column,'.')){
+            $this->isRelatedColumn = true;
+            $columns = explode('.', $column);
+            $this->relations = Arr::except($columns, $columns[count($columns)-1]);
+            $column = array_pop($this->relations);
+        }
+        $this->column = $column;
+        $this->type = $type;
+    }
 
     public static function make(string $column, string $type = self::TYPE_TEXT): static{
-        if(str_contains($column,'.')) self::$isRelatedColumn = true;
         return new static($column, $type);
     }
 
@@ -103,6 +114,14 @@ class Column{
     # getters and setters for column attributes
     public function getColumn(): string{
         return $this->column;
+    }
+
+    public function getTableColumn(): string|null{
+        return !$this->isRelatedColumn ? $this->column : null;
+    }
+
+    public function getRelations(): array{
+        return $this->relations;
     }
 
     public function getLabel(): string{

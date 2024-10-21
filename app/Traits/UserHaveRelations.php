@@ -8,9 +8,11 @@ use App\Models\Media;
 use App\Models\Wallet;
 use App\Models\Country;
 use App\Models\UserContact;
+use App\Models\Conversation;
 use App\Models\PostPurchase;
 use App\Models\UserLoginLog;
 use App\Models\UserHaveSubject;
+use App\Models\UserPrice;
 use App\Models\UserQualification;
 
 trait UserHaveRelations{
@@ -68,5 +70,17 @@ trait UserHaveRelations{
 
     public function conversation(){
         return $this->hasMany(Conversation::class, ['teacher_id', 'student_id']);
+    }
+
+    public function userPrices(){
+        return $this->hasMany(UserPrice::class, 'user_id');
+    }
+
+    public function userPrice(){
+        return $this->userPrices()->latest()->first();
+    }
+
+    public function getPriceAttribute(){
+        return $this->userPrice()->price ?? 0;
     }
 }

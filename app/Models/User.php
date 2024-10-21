@@ -60,7 +60,7 @@ class User extends Authenticatable
         ];
     }
 
-    protected $appends = ['wallet_balance'];
+    protected $appends = ['wallet_balance', 'price'];
 
 
     # role scopes

@@ -85,7 +85,7 @@ class Grid{
     }
 
     protected function getSelectiveColumns(Builder $query): Builder {
-        return $query->select(array_merge($this->columns->getColumnsColumn(true), $this->requireColumns));
+        return $query->with($this->columns->getRelations())->select(array_merge($this->columns->getTableColumns(true), $this->requireColumns));
     }
 
     /**
@@ -109,7 +109,7 @@ class Grid{
      */
     protected function applySorts(Builder $query): Builder {
         if($this->request->has('sort')){
-            $column = $this->columns->first(fn(Column $column) => key($this->request->sort) === $column->getColumn() && $column->getIsSortable());
+            $column = $this->columns->findColumn(fn(Column $column) => key($this->request->sort) === $column->getColumn() && $column->getIsSortable());
             if($column){
                 $column->sortBy($this->request->sort[$column->getColumn()]);
                 $query->orderBy($column->getColumn(), $column->getSortBy());

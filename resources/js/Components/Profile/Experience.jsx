@@ -1,15 +1,17 @@
 import { useRef } from "react";
 import ExperienceForm from "./Forms/Experiences";
 
-export default function Experience({ user }) {
+export default function Experience({ user, myProfile }) {
     const formModalRef = useRef(null);
+    console.log(user);
+
     return (
         <>
             <div className="card bg-base-100 w-100 border static">
                 <div className="card-body">
                     <div className="flex items-center mb-3">
                         <h2 className="card-title text-2xl font-bold flex-1">Experience</h2>
-                        <button className="btn btn-ghost btn-sm" onClick={e => formModalRef.current.showModal()} >Update Experience</button>
+                        {!myProfile || <button className="btn btn-ghost btn-sm" onClick={e => formModalRef.current.showModal()} >Update Experience</button>}
                     </div>
 
                     <div className="p-4 md:p-2">

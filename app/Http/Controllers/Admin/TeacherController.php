@@ -26,7 +26,7 @@ class TeacherController extends Controller{
                 ->columns([
                     Column::make('name', 'Name'),
                     Column::make('email', 'Email'),
-                    Column::action('payment')
+                    Column::action('actions')
                 ])->render()
         ]);
     }
@@ -68,5 +68,20 @@ class TeacherController extends Controller{
             Log::error("Fail to add the payment in user id ({$request->user_id}) due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while adding the payment! Reverted the data back");
         }
+    }
+
+    public function show(Request $request, $id){
+        $teacher = User::whereHas('roles', fn($query) => $query->where('name', 'teacher'))->findOrFail(base64_decode($id));
+        return Inertia::render('Admin/Teacher/View', [
+            'teacher' => $teacher,
+            'payments' => Grid::of(Wallet::where('user_id', $id))
+                ->columns([
+                    Column::make('amount', 'Amount'),
+                    Column::make('transaction_type', 'Transaction Type'),
+                    Column::make('payment.status', 'Status'),
+                    Column::make('created_at', 'Date'),
+                ])
+                ->render()
+        ]);
     }
 }

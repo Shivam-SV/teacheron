@@ -15,6 +15,10 @@ class TutorController extends Controller
     }
 
     public function view($tutorId){
-        return Inertia::render('Tutors/View', ['tutor' => User::teacher()->with(['userSubjects'])->findOrFail(base64_decode($tutorId))]);
+        return Inertia::render('Tutors/View', ['tutor' => User::teacher()->with(['userContacts', 'userSubjects', 'qualifications', 'country'])->findOrFail(base64_decode($tutorId))]);
+    }
+
+    public function wishlistUser(Request $request, $tutorId){
+
     }
 }

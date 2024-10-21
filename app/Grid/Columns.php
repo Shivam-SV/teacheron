@@ -33,11 +33,24 @@ class Columns implements ArrayAccess{
     public function getColumnsSortBy($excludedActions = false):array{
         return $this->map(fn($column) => $excludedActions ? (!$column->isAction() ? $column->getSortBy() : null) : $column->getSortBy());
     }
+    public function getTableColumns($excludedActions = false):array{
+        return $this->map(fn($column) => $excludedActions ? (!$column->isAction() ? $column->getTableColumn() : null) : $column->getTableColumn());
+    }
+
+    public function getRelations():array{
+        return array_unique($this->mapMerge(fn($column) => $column->getRelations()));
+    }
 
     public function map(callable $callback):array{
         $buffer = [];
         foreach($this->columns as $column) $buffer[] = $callback($column);
         return array_filter($buffer);
+    }
+
+    public function mapMerge(callable $callback):array{
+        $buffer = [];
+        foreach($this->columns as $column) $buffer[] = $callback($column);
+        return array_merge([],...$buffer);
     }
 
     public function findColumn(callable $callback):Column|null{

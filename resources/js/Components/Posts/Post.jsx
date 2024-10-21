@@ -1,24 +1,37 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {placeholderImage} from '../../_utils/commons';
 import { buyPost, savePost, unsavePost } from '../../_utils/apis';
 import { toast } from 'react-toastify';
 import { useRef, useState } from 'react';
 import Confirm from '../Partials/Confirm';
+import Coin from '../Elements/Coin';
 
-export default function Post({content}){
+export default function Post({content, onNoAuth}){
+    const {auth} = usePage().props;
     const [isSaved, setIsSaved] = useState(content?.saves?.length > 0);
     const buyPostRef = useRef(null);
 
     const handleSavePost = (event) => {
         event.preventDefault();
-        if(isSaved) unsavePost(btoa(content.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
-        else savePost(btoa(content.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+        if(auth){
+            if(isSaved) unsavePost(btoa(content.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+            else savePost(btoa(content.id)).then(res => res.status && setIsSaved(!isSaved)).catch(res => toast.error(res.message));
+        }else onNoAuth();
+    }
+
+    const launchBuyModal = (e) => {
+        e.preventDefault();
+        if(auth){
+            buyPostRef.current.showModal();
+        }else onNoAuth();
     }
 
     const handlePostBuy = (event) => {
         event.preventDefault();
-        buyPostRef.current.close();
-        buyPost(btoa(content.id));
+        if(auth){
+            buyPostRef.current.close();
+            buyPost(btoa(content.id));
+        }else onNoAuth();
     }
     return (
         <>
@@ -43,7 +56,7 @@ export default function Post({content}){
                     <address className='text-sm text-neutral/60'><i className='bx bxs-map-pin mr-1 text-base align-middle'></i> {content.address}</address>
                     <div className="flex items-center">
                         <p className='flex-1'>{content.budget} <span className='text-primary'>{content.budget_currency_code}</span></p>
-                        <button className="btn btn-sm btn-primary" onClick={(e) => e.preventDefault() || buyPostRef.current.showModal()}><i className='bx bxs-dollar-circle text-yellow-400 text-lg'></i> {Math.abs(content.price)}</button>
+                        <button className="btn btn-sm btn-primary" onClick={launchBuyModal}><Coin price={content.price} /></button>
                     </div>
                 </div>
             </Link>
