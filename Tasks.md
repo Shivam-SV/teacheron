@@ -25,7 +25,8 @@
 
 ### Admin related tasks
 -- Adjust the levels table changes in admin side. ~ Done
--- Add an option to set the teacher price and also a tracking table which tracks the teacher price. 
+-- Add an option to set the teacher price and also a tracking table which tracks the teacher price.
+-- Implement settings table and retrieve the settings from the database, also use caching for better performance.
 
 ### Payment related tasks
 -- Add a payment gateway integration.

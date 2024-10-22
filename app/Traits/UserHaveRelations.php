@@ -84,4 +84,8 @@ trait UserHaveRelations{
     public function userPrice(){
         return $this->userPrices()->latest()->first();
     }
+
+    public function wishlistedUsers(){
+        return $this->belongsToMany(User::class, 'wishlisted_users', 'user_id', 'wishlisted_user_id');
+    }
 }
