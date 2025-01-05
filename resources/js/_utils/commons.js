@@ -1,3 +1,4 @@
+import { router } from "@inertiajs/react";
 import { toast } from "react-toastify";
 
 window.toastedMessage = [];
@@ -42,4 +43,12 @@ export function avatarImage(name, color = 'random', size = 64){
     if(color) url.searchParams.set('background', color);
     if(size) url.searchParams.set('size', size);
     return url.toString();
+}
+
+export function reloadPageData(loadOnly = []) {
+    router.visit(window.location.href, loadOnly.length > 0? { only: loadOnly } : {})
+}
+
+export function csrfToken(){
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 }

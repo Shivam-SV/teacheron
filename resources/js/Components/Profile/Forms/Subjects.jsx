@@ -25,7 +25,7 @@ export default function SubjectsForm({user, onSubmit}){
     const userSelectedSubjects =user?.user_subjects?.length && user?.user_subjects?.map(us => ({id: us.id, subject_id: us.subject.id, levels_id: us.levels.map(l => l.id)}));
     const subjectRowTemplate = {id: '',subject_id:"",levels_id: []};
     const {data, setData, processing, errors, post, reset} = useForm(
-        userSelectedSubjects && userSelectedSubjects.length > 0 ? {userSubjects:[...userSelectedSubjects, {...subjectRowTemplate} ]}: {userSubjects:[{...subjectRowTemplate}]}
+        userSelectedSubjects && userSelectedSubjects.length > 0 ? {userSubjects:[...userSelectedSubjects ]}: {userSubjects:[{...subjectRowTemplate}]}
     );
     const addRow = () => setData('userSubjects', [...data.userSubjects, {...subjectRowTemplate}]);
     const removeRow = (i) => setData('userSubjects', data.userSubjects.filter((e, index) => index !== i));
@@ -44,7 +44,7 @@ export default function SubjectsForm({user, onSubmit}){
             {data.userSubjects.length > 0 ? data.userSubjects.map((r, i) => {
                 return (
                     <div className="grid grid-cols-12 gap-4 flex-wrap items-end" key={i}>
-                        <div className="col-span-5 mb-2">
+                        <div className="col-span-6 mb-2">
                             <div className="form-control">
                                 {i === 0 ? <label htmlFor={"subject" + i}>Subject</label> : <></>}
                                 <select className="select select-bordered" id={"subject" + i} onChange={(e) => updateUserSubjects(i, 'subject_id', e.target.value)} defaultValue={r.subject_id}>
@@ -56,24 +56,25 @@ export default function SubjectsForm({user, onSubmit}){
                             </div>
                             { errors && errors[`userSubjects.${i}.subject_id`] && <span className="text-error">{errors[`userSubjects.${i}.subject_id`].toString().replace(`userSubjects.${i}.subject_id`, 'Subject')}</span>}
                         </div>
-                        <div className="col-span-5 mb-2">
+                        <div className="col-span-6 mb-2">
                             <div className="form-control">
                                 {i === 0 ? <label htmlFor={"level_from" + i}>Levels</label> : <></>}
                                 <Select isMulti defaultValue={r.levels_id.map(lId => levels.find(l => l.value === lId))} onChange={(o, e) => updateUserSubjects(i, 'levels_id', o.map(v => v.value))} options={levels}></Select>
                             </div>
                             {errors && errors[`userSubjects.${i}.levels_id`] && <span className="text-error">{errors[`userSubjects.${i}.levels_id`].toString().replace(`userSubjects.${i}.levels_id`, 'Level')}</span>}
                         </div>
-                        <div className="col-span-2 mb-2 text-center">
+                        {/* <div className="col-span-2 mb-2 text-center">
                             { i === (data.userSubjects.length - 1) ?
                                 <button type="button" className="btn btn-ghost" onClick={addRow}><i className="bx bx-plus text-lg"></i></button> :
                                 <button type="button" className="btn btn-ghost" onClick={() => removeRow(i)}><i className="bx bx-minus text-lg"></i></button>
                             }
-                        </div>
+                        </div> */}
                     </div>
                 );
             }) : <em className="text-neutral/40">No added subject</em>}
-            <div className="modal-action justify-center">
-                <button className="btn btn-primary w-1/4">{processing && <i className='bx bx-loader-alt bx-spin' ></i>} Save</button>
+            <div className="modal-action justify-end gap-1">
+                <button type="button" className="btn btn-ghost text-primary" onClick={addRow}><i className="bx bx-plus text-lg"></i> Add Subject</button>
+                <button className="btn btn-primary">{processing && <i className='bx bx-loader-alt bx-spin' ></i>} Save</button>
             </div>
         </form>
     );

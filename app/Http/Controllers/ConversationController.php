@@ -13,12 +13,15 @@ use Inertia\Inertia;
 class ConversationController extends Controller
 {
     public function index(){
-        return Inertia::render('Conversations/Index');
+        return Inertia::render('Conversations/Index', ['conversations' => $this->allConversations(base64_encode(auth()->id()))]);
     }
 
     public function viewConversation($conversationId){
         $conversation = Conversation::with(['teacher', 'student'])->findOrFail(base64_decode($conversationId));
-        return Inertia::render('Conversations/View', compact('conversation'));
+        $conversations = $this->allConversations(base64_encode(auth()->id()));
+
+        $messages = $this->loadMessages($conversationId);
+        return Inertia::render('Conversations/View', compact('conversation', 'conversations', 'messages'));
     }
 
     public function sendMessage($conversationId, Request $request){
@@ -29,7 +32,7 @@ class ConversationController extends Controller
                 'message' => $request->message,
                 'sender_id' => auth()->id()
             ]);
-            broadcast(new MessageEvent($message));
+            // broadcast(new MessageEvent($message));
             return response(['status' => true,'message' => 'Message sent successfully', 'display' => false], 200);
         }catch(ValidationException $e){
             return response((['status' => false, 'display' => true] + $e->errors()), 500);
@@ -46,8 +49,8 @@ class ConversationController extends Controller
         return Conversation::with(['teacher', 'student'])->where('teacher_id', $userId)->orWhere('student_id', $userId)->get()->map->append('last_message');
     }
 
-    public function loadMessages($conversationId, Request $request){
-        $PageSize = $request->pageSize ?? 50;
+    public function loadMessages($conversationId){
+        $PageSize = request('pageSize', 50);
         return Message::where('conversation_id',base64_decode($conversationId))->orderBy('created_at', 'desc')->paginate($PageSize);
     }
 }

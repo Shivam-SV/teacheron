@@ -10,6 +10,8 @@ use App\Models\UserHaveRole;
 use App\Models\UserLoginLog;
 use Illuminate\Http\Request;
 use App\Mail\VerifyUserEmail;
+use App\Models\Country;
+use App\Models\DocumentType;
 use App\Models\UserPrice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +21,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 trait HasUserAuthentications
 {
+    protected $onboardingSteps = ['education', 'experience', 'documents', 'summary', 'completed'];
 
     # Logs in User locally
     public function login(Request $request): null|\Illuminate\Http\RedirectResponse
@@ -36,14 +39,20 @@ trait HasUserAuthentications
 
         # Authenticating and logging if authenticated
         if (Auth::attempt($request->only('email', 'password'))) {
+            $user = User::where('email', $request->email)->first();
+
             UserLoginLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $user->id,
                 'login_at' => now(),
                 'device_IP' => $request->ip(),
                 'system_info' => $_SERVER['HTTP_USER_AGENT']
             ]);
 
-            return $this->admin ? to_route('supadmin.home') : to_route('home');
+            $route = 'home';
+            if($this->admin) $route ='supadmin.home';
+            else if($user->profile_completed_score < 60 && $user->is('teacher')) $route = 'on-board';
+            
+            return to_route($route);
         }
 
         # Sending error message
@@ -82,14 +91,7 @@ trait HasUserAuthentications
                 'user_login_type' => 'social'
             ]);
             if ($googleUser->avatar) {
-                Media::create([
-                    'model_id' => $user->id,
-                    'model_name' => (new User)->getTable(),
-                    'model_column' => 'profile',
-                    'file_path' => $googleUser->avatar,
-                    'file_name' => Str::snake($googleUser->name) . 'Profile',
-                    'source' => 'web'
-                ]);
+                $user->attachWebMedia($googleUser->avatar, 'profile', Str::snake($googleUser->name) . 'Profile');
             }
         }
         # logging in and recording a log
@@ -120,10 +122,10 @@ trait HasUserAuthentications
         DB::beginTransaction();
         $user = User::create(array_merge($request->only('email', 'password', 'name'), ['country_id' => config('defaults.country_id')]));
         UserHaveRole::create(['user_id' => $user->id, 'role_id' => $request->role]);
-        DB::commit();
-        Session()->flash('success', 'Register Successfully');
+        if($user->is('teacher')) UserPrice::create(['user_id' => $user->id, 'price' => config('defaults.user_price')]);
 
-        if($user->is('teacher')) UserPrice::create(['user_id' => $user->id, 'price' => config('app.default_user_price')]);
+        Session()->flash('success', 'Register Successfully');
+        DB::commit();
         return to_route('send-verification-email', ['userId' => encrypt($user->id)]);
     }
 
@@ -160,5 +162,19 @@ trait HasUserAuthentications
     public function logout(){
         auth()->logout();
         to_route('home');
+    }
+
+    public function onBoarding(Request $request, ?string $step = null){
+        if(!$step) $step = $this->onboardingSteps[session('onboarding_step', 0)];
+        session(['onboarding_step' => array_search($step, $this->onboardingSteps)]);
+
+        $user = User::with(['userExperience', 'qualifications', 'userSubjects', 'documents'])->find(auth()->id());
+
+        $pageProps = ['user' => $user];
+
+        if($step == 'documents') $pageProps['documentTypes'] = DocumentType::all();
+        else if($step == 'summary') $pageProps['countries'] = Country::all();
+
+        return Inertia::render("Onboarding/". ucfirst($step), $pageProps);
     }
 }

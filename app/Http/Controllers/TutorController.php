@@ -11,7 +11,13 @@ class TutorController extends Controller
 {
     public function index(){
         return Inertia::render('Tutors/Index', [
-            'tutors' => User::teacher()->with(['userSubjects'])->get()
+            'tutors' => User::teacher()
+            ->with(['userSubjects'])
+            ->whereHas('userSubjects')
+            ->whereHas('qualifications')
+            ->whereHas('userExperience')
+            ->whereHas('documents')
+            ->paginate(10),
         ]);
     }
 

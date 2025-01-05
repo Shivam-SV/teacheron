@@ -6,10 +6,11 @@ import { useRef, useState } from 'react';
 import Confirm from '../Partials/Confirm';
 import Coin from '../Elements/Coin';
 
-export default function Post({content, onNoAuth}){
+export default function Post({content, onNoAuth, readonly}){
     const {auth} = usePage().props;
     const [isSaved, setIsSaved] = useState(content?.saves?.length > 0);
     const buyPostRef = useRef(null);
+    readonly = readonly ?? (auth.id === content.created_by_user_id);
 
     const handleSavePost = (event) => {
         event.preventDefault();
@@ -43,7 +44,7 @@ export default function Post({content, onNoAuth}){
                             <h2 className="text-base font-semibold">{content.title}</h2>
                             <p className="text-xs text-neutral/40">{content.posted_since}</p>
                         </div>
-                        <button className='btn btn-ghost text-lg btn-sm tooltip' data-tip={isSaved ? "Saved":"Save for later"} onClick={handleSavePost}><i className={isSaved ? 'bx bxs-bookmark' :'bx bx-bookmark'} ></i></button>
+                        {!readonly && <button className='btn btn-ghost text-lg btn-sm tooltip' data-tip={isSaved ? "Saved":"Save for later"} onClick={handleSavePost}><i className={isSaved ? 'bx bxs-bookmark' :'bx bx-bookmark'} ></i></button>}
                     </div>
                     <div className='flex gap-2 flex-wrap'>
                         {content?.subjects && content.subjects.map(s => {
@@ -56,7 +57,7 @@ export default function Post({content, onNoAuth}){
                     <address className='text-sm text-neutral/60'><i className='bx bxs-map-pin mr-1 text-base align-middle'></i> {content.address}</address>
                     <div className="flex items-center">
                         <p className='flex-1'>{content.budget} <span className='text-primary'>{content.budget_currency_code}</span></p>
-                        <button className="btn btn-sm btn-primary" onClick={launchBuyModal}><Coin price={content.price} /></button>
+                        {!readonly && <button className="btn btn-sm btn-primary" onClick={launchBuyModal}><Coin price={content.price} /></button>}
                     </div>
                 </div>
             </Link>

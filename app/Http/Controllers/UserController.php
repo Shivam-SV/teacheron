@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\DocumentType;
 use Exception;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\UserContact;
+use App\Models\UserDocument;
 use App\Models\UserHaveExperience;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
@@ -27,8 +29,8 @@ class UserController extends Controller
     protected $admin = false;
 
     public function Profile(?string $userId = null){
-        $user = User::with(['userContacts', 'userSubjects', 'qualifications', 'country', 'userExperience'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
-        return Inertia::render('Auth/Profile', ['user' => $user]);
+        $user = User::with(['userContacts', 'userSubjects', 'qualifications', 'country', 'userExperience', 'documents', 'posts'])->findOrFail($userId ? base64_decode($userId) : auth()->id());
+        return Inertia::render('Auth/Profile', ['user' => $user, 'documentTypes' => DocumentType::all()]);
     }
 
     public function EditProfile(?string $userId = null){
@@ -44,7 +46,7 @@ class UserController extends Controller
             'email' => ["required", 'email', Rule::unique('users')->ignore($user->id)],
             'date_of_birth' => 'nullable|date|date_format:Y-m-d',
             'gender' => "required|in:male,female,not specified",
-            'bio' => 'nullable|string',
+            'bio' => 'nullable|string|min:200|max:1000',
             'address' => 'nullable|string',
             'country_id' => 'required|exists:countries,id',
             'alternate_emails' => 'nullable',
@@ -56,7 +58,6 @@ class UserController extends Controller
             $alternatePhones = !empty($request->alternate_phone) ? (is_array($request->alternate_phone) ? $request->alternate_phone : array_map('trim',explode(',',$request->alternate_phone))) : [];
             $user->update(array_merge($request->only('name', 'email', 'date_of_birth', 'gender', 'address', 'bio', 'country_id'), ['alternate_emails' => $alternateEmails,'alternate_phone' => $alternatePhones]));
             Session::flash('success', 'Profile Updated');
-            return to_route('profile');
         }catch(\Throwable $th){
             Log::error("Fail to update basic user profile (user_id: $user->id) due to: {$th->getMessage()}");
             Session::flash('error', "Oops! we faced something wrong while updating the profile! Reverted the data back");
@@ -124,7 +125,7 @@ class UserController extends Controller
             'experience.*.ended_at' => 'nullable|date|date_format:Y-m',
             'experience.*.description' => 'nullable|string|max:1000',
             'experience.*.user_id' => 'required|numeric|exists:users,id',
-            'experience.*.id' => 'nullable|numeric|exists:user_experiences,id',
+            'experience.*.id' => 'nullable|numeric|exists:user_have_experiences,id',
         ]);
 
         try{
@@ -190,6 +191,64 @@ class UserController extends Controller
         }catch(\Throwable $th){
             Log::error("Fail to add new contact number in user profile (user_id: $user->id) due to: {$th->getMessage()}");
             Session::flash('error', "OTP doesn't matches or expired, please try again later");
+        }
+    }
+
+    public function UpdateDocuments(Request $request, $userId){
+        $user = User::findOrFail(base64_decode($userId));
+        $request->validate([
+            'document.*.document_type_id' => 'required|numeric|exists:document_types,id',
+            'document.*.document_files' => 'required|array',
+            'document.*.document_files.*' => 'required|file|mimes:jpeg,png,jpg,pdf|max:5120',
+        ], [
+            'attributes' => [
+                'document.*.document_type_id' => 'Document Type',
+                'document.*.document_files.*' => 'Document Files',
+            ]
+        ]);
+
+        try{
+            foreach($request->document as $document){
+                $UserDocument = UserDocument::updateOrCreate(['user_id' => $user->id, 'document_type_id' => $document['document_type_id']]);
+                foreach($document['document_files'] as $file){
+                    $UserDocument->attachMedia($file, UserDocument::DOCUMENT_FILES);
+                }
+            }
+
+            Session::flash('success', 'Your documents has been uploaded, wait for our team to review it and approve it');
+        }catch(\Throwable $th){
+            Log::error("Fail to update documents user profile (user_id: $user->id) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the documents! Reverted the data back");
+        }
+    }
+
+    public function UpdateProfilePic(Request $request, $userId){
+        $user = User::findOrFail(base64_decode($userId));
+        $request->validate([
+            'profile' => 'required|file|mimes:jpeg,png,jpg|max:5120|dimensions:max_width=1000,max_height=1000, min_width=50,min_height=50,ratio=1/1'
+        ]);
+
+        try{
+            $user->updateMedia($request->profile, User::PROFILE, $user->profile ? $user->profile->id : null);
+            Session::flash('success', 'Profile picture has been updated');
+        }catch(\Throwable $th){
+            Log::error("Fail to update profile picture user profile (user_id: $user->id) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the profile picture! Reverted the data back");
+        }
+    }
+
+    public function UpdateTimelinePic(Request $request, $userId){
+        $user = User::findOrFail(base64_decode($userId));
+        $request->validate([
+            'timeline' => 'required|file|mimes:jpeg,png,jpg|max:8192|dimensions:max_width=1500,max_height=300,min_width=250,min_height=50,ratio=5/1'
+        ]);
+
+        try{
+            $user->updateMedia($request->timeline, User::PROFILE, $user->timeline ? $user->timeline->id : null);
+            Session::flash('success', 'Timeline picture has been updated');
+        }catch(\Throwable $th){
+            Log::error("Fail to update timeline picture user profile (user_id: $user->id) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the timeline picture! Reverted the data back");
         }
     }
 }

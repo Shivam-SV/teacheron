@@ -1,26 +1,11 @@
 import { Link, usePage } from "@inertiajs/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { avatarImage } from "../../_utils/commons";
 
 export default function ConversationsList() {
-    const {auth} = usePage().props;
-    const [conversations, setConversations] = useState([]);
-
-    const getConversation = () => {
-        axios.get(route('api.conversations', btoa(auth.id))).then(res => setConversations(res.data));
-    }
-
-    useEffect(() => {
-        getConversation();
-        return () => {
-            setConversations([]);
-        };
-    }, []);
-
+    const {conversations} = usePage().props;
     return (
         <div className="bg-white shadow-lg h-full">
-            <div className="p-2 border-b border-gray-100">
+            {/* <div className="p-2 border-b border-gray-100">
                 <input type="text" placeholder="Search Conversations" className="input rounded-full bg-base-200 w-full" />
             </div>
 
@@ -30,9 +15,9 @@ export default function ConversationsList() {
                     <li role="tab" className="tab grow">Active</li>
                     <li role="tab" className="tab grow">Archived</li>
                 </ul>
-            </div>
+            </div> */}
             <ul className="menu rounded-box space-y-2">
-                {conversations.length > 0 ? conversations?.map(c => {
+                {conversations?.length > 0 ? conversations?.map(c => {
                     return (
                         <li key={c.id}>
                             <Link className="flex items-center" href={route('conversation.view', btoa(c.id))}>

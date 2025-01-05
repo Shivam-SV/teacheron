@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class UserPrice extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'price',
+        'updated_by'
+    ];
 }

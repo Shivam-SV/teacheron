@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserDocumentStatus;
 use App\Traits\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,5 +30,20 @@ class UserDocument extends Model
         'status_updated_by',
     ];
 
+    protected $casts = [
+        'status' => UserDocumentStatus::class,
+        'status_updated_at' => 'datetime',
+    ];
+
+    protected $with = ['documentFiles', 'documentType'];
+
     protected $medias = [Self::DOCUMENT_FILES];
+
+    public function documentFiles(){
+        return $this->media(Self::DOCUMENT_FILES);
+    }
+
+    public function documentType(){
+        return $this->belongsTo(DocumentType::class);
+    }
 }

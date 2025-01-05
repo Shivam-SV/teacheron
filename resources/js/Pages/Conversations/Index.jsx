@@ -1,4 +1,5 @@
 import ConversationsList from "../../Components/Conversations/ConversationsList";
+import NoChatSelected from "../../Components/Conversations/NoChatSelected";
 import Layout from "../../Layouts/AppLayout";
 
 export default function Conversations() {
@@ -10,6 +11,7 @@ export default function Conversations() {
                         <ConversationsList />
                     </div>
                     <div className="w-full h-full">
+                        <NoChatSelected />
                     </div>
                 </div>
             </div>

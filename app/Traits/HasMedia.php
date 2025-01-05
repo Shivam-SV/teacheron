@@ -47,8 +47,12 @@ trait HasMedia
 
     // Define a relationship to fetch media for a specific column
     public function media($column){
-        return $this->morphMany(Media::class, 'model', 'model_name', 'model_id')
+        return $this->morphMany(Media::class, 'model')
                     ->where('model_column', $column);
+    }
+
+    public function singleMedia($column){
+        return $this->hasOne(Media::class, 'model_id', 'id')->where('model_type', Self::class)->where('model_column', $column);
     }
 
     // Fetch all media files for a specific column
@@ -63,17 +67,23 @@ trait HasMedia
 
     // Add media to the model for a specific column
     public function attachMedia($file, $column){
-        return Media::storeTempFile($file, static::class, $column);
+        return Media::attachFile($file, $this->id, static::class, $column);
+    }
+
+    public function attachWebMedia($url, $column, $filename = null){
+        return Media::attachWebFile($url, $this->id, static::class, $column, $filename);
     }
 
     // Update media for a specific column, optionally by ID
-    public function updateMedia($file, $column, $mediaId = null){
+    public function updateMedia($file, $column, $mediaId = null, $source = 'storage', $filename = null){
         $media = $mediaId ? $this->media($column)->where('id', $mediaId)->first() : $this->getSingleMedia($column);
 
         if ($media) {
-            $media->updateFile($file);
+            if($source == 'storage') $media->updateFile($file);
+            if($source == 'web') $media->updateWebFile($file, $filename);
         } else {
             return $this->attachMedia($file, $column);
+            return $this->attachWebMedia($file, $column, $filename);
         }
         return $this;
     }

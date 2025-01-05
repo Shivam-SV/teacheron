@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import SubjectsForm from "./Forms/Subjects";
 import { avatarImage } from "../../_utils/commons";
+import ModalClose from "../Elements/ModalClose";
 
 export default function Subject({ user, myprofile }) {
     const editmodalRef = useRef(null);
@@ -26,9 +27,9 @@ export default function Subject({ user, myprofile }) {
         </div>
         <dialog className="modal" ref={editmodalRef}>
             <div className="modal-box w-3/5 max-w-6xl">
+                <ModalClose onPress={() => editmodalRef.current.close()} />
                 <div className="flex items-center mb-4">
                     <h3 className="text-lg font-medium grow">Update Subjects</h3>
-                    <button className="btn btn-ghost rounded-full" onClick={() => editmodalRef.current.close()}>✕</button>
                 </div>
                 <SubjectsForm user={user} onSubmit={() => editmodalRef.current.close()} />
             </div>

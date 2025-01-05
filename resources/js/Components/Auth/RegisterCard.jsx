@@ -1,4 +1,4 @@
-import { useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
 import { formHandler } from "../../_utils/commons";
 
@@ -25,7 +25,7 @@ export default function RegisterCard({roles}) {
                 </div>
                 <div className="card-body">
                     <form onSubmit={formHandler(post)} action="/register">
-                        <div className="mb-4">
+                        <div className="mb-6">
                             <div className="form-control mb-2">
                                 <label htmlFor="name">Name</label>
                                 <input
@@ -84,7 +84,7 @@ export default function RegisterCard({roles}) {
                                                     key={role?.id}
                                                     value={role.id}
                                                 >
-                                                    {role.name}
+                                                    {role.name.ucfirst()}
                                                 </option>
                                             );
                                         })
@@ -98,23 +98,20 @@ export default function RegisterCard({roles}) {
                             </div>
                         </div>
                         <div className="flex justify-between items-center">
-                            <button className="btn btn-primary" disabled={processing}>
+                            <button className="btn btn-primary w-full" disabled={processing}>
                             {processing && <i className='bx bx-loader-alt bx-spin' ></i>} <i className="bx bx-lock"></i> Sign in
                             </button>
-                            <div
-                                className="tooltip"
-                                data-tip="Sign-up with google"
-                            >
-                                <a
-                                    type="button"
-                                    className="btn glass btn-circle"
-                                    href="/google/redirect"
-                                >
-                                    <i className="bx bxl-google text-2xl"></i>
-                                </a>
-                            </div>
                         </div>
                     </form>
+                    <div className="divider">OR</div>
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="tooltip" data-tip="Sign-up with google" >
+                            <a type="button" className="btn glass btn-circle" href="/google/redirect">
+                                <i className="bx bxl-google text-2xl"></i>
+                            </a>
+                        </div>
+                        <p className="text-center"> <Link href="/login" className="link underline-offset-2">Sign up</Link> with existing account</p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -7,6 +7,10 @@ import { ToastContainer } from 'react-toastify';
 import "./_utils/prototypes.js";
 import './echo.js';
 
+import 'lightgallery/css/lightgallery.css';
+import 'lightgallery/css/lg-zoom.css';
+import 'lightgallery/css/lg-thumbnail.css';
+
 createInertiaApp({
     title: title => `${title} - TeacherOn`,
   resolve: name => {

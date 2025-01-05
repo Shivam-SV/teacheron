@@ -12,9 +12,11 @@ use App\Models\Wallet;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use App\Enums\TransactionType;
+use App\Enums\UserDocumentStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Session;
 
 class TeacherController extends Controller{
@@ -71,7 +73,7 @@ class TeacherController extends Controller{
     }
 
     public function show(Request $request, $id){
-        $teacher = User::whereHas('roles', fn($query) => $query->where('name', 'teacher'))->findOrFail(base64_decode($id));
+        $teacher = User::with(['userPrice','userContacts', 'userSubjects', 'qualifications', 'country', 'userExperience', 'documents'])->whereHas('roles', fn($query) => $query->where('name', 'teacher'))->findOrFail(base64_decode($id));
         return Inertia::render('Admin/Teacher/View', [
             'teacher' => $teacher,
             'payments' => Grid::of(Wallet::where('user_id', $id))
@@ -81,7 +83,38 @@ class TeacherController extends Controller{
                     Column::make('payment.status', 'Status'),
                     Column::make('created_at', 'Date'),
                 ])
-                ->render()
+                ->render(),
         ]);
+    }
+
+    public function changePrice(Request $request, $teacherId){
+        $teacher = User::findOrFail(base64_decode($teacherId));
+        $request->validate([
+            'price' => 'required|numeric|gt:0|lt:1000000'
+        ]);
+
+        try{
+            $teacher->UpdatePrice($request->price);
+            Session::flash('success', "Price has been updated successfully");
+        }catch(Exception $th){
+            Log::error("Fail to update the price of the teacher id ({$teacherId}) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the price! Reverted the data back");
+        }
+    }
+
+    public function verifyDocument(Request $request, $teacherId){
+        $teacher = User::findOrFail(base64_decode($teacherId));
+        $request->validate([
+            'document_id' => 'required|numeric|exists:user_documents,id',
+            'document_status' => 'required|in:'. implode(',',array_column(UserDocumentStatus::cases(), 'value'))
+        ]);
+
+        try{
+            $teacher->documents->find($request->document_id)->update(['status' => $request->document_status]);
+            Session::flash('success', "Document status has been updated successfully");
+        }catch(Exception $th){
+            Log::error("Fail to update the document status of the teacher id ({$teacherId}) due to: {$th->getMessage()}");
+            Session::flash('error', "Oops! we faced something wrong while updating the document status! Reverted the data back");
+        }
     }
 }

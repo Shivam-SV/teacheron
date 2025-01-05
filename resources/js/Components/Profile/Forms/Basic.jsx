@@ -1,9 +1,10 @@
-import { router, useForm } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import { formHandler } from "../../../_utils/commons";
 import { useState } from "react";
 import Contact from "./Contact";
 
-export default function Basic({user, countries}){
+export default function BasicForm({user, hideContacts = false, onComplete}){
+    const countries = usePage().props.countries;
     const {post, data, setData, errors, processing} = useForm({
         name: user.name,
         email: user.email,
@@ -13,11 +14,17 @@ export default function Basic({user, countries}){
         bio: user.bio || '',
         country_id: user.country_id || ''
     });
+    const [bioLength, setBioLength] = useState(data.bio.length);
+
+    const updateBioAndLength = (value) => {
+        setBioLength(value.length);
+        setData('bio', value)
+    }
     const [contactCount, setContactCount] = useState(1);
 
     return (
         <>
-            <form action={route('profile.update-basic', btoa(user.id))} onSubmit={formHandler(post)}>
+            <form action={route('profile.update-basic', btoa(user.id))} onSubmit={formHandler(post, onComplete)}>
                 <div className="grid grid-cols-12 gap-4 items-end">
                     <div className="lg:col-span-3 md:col-span-4 sm:col-span-6 col-span-12">
                         <label htmlFor="name" className="block">Name</label>
@@ -54,36 +61,43 @@ export default function Basic({user, countries}){
                             {countries.length > 0 && countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
-                    <div className="lg:col-span-3 md:col-span-4 sm:col-span-6 col-span-12">
+                    <div className="col-span-12">
                         <label htmlFor="bio" className="block">Summary</label>
-                        <textarea name="bio" id="bio" cols="30" rows="10" className="input input-bordered w-full" placeholder="Something about yourself" defaultValue={data.bio} onInput={e => setData('bio', e.target.value)}></textarea>
-                        { errors.bio && <span className="text-error">{errors.bio}</span> }
+                        <textarea name="bio" id="bio" cols="30" rows="10" className={"input input-bordered w-full h-24 " + (bioLength < 200 ? 'input-error' : 'input-success')} placeholder="Something about yourself" defaultValue={data.bio} onInput={e => updateBioAndLength(e.target.value)}></textarea>
+                        <div className="flex justify-between">
+                            { errors.bio ? <span className="text-error">{errors.bio}</span> : <></> }
+                            <span className="text-sm text-neutral-500">{bioLength}/200</span>
+                        </div>
                     </div>
                     <div className="lg:col-span-3 md:col-span-4 sm:col-span-6 col-span-12 sm:text-left text-center">
                         <button type="submit" disabled={processing} className="btn btn-primary text-lg mb-2">{processing && <i className='bx bx-loader-alt bx-spin' ></i>} Save</button>
                     </div>
                 </div>
             </form>
-            <hr className="my-8" />
-            <div className="flex items-center">
-                <h4 className="text-lg font-semibold mb-4 grow">Contacts</h4>
-                <button className="btn btn-sm btn-ghost" onClick={(e) => setContactCount(contactCount+1)}><i className="bx bx-plus text-lg"></i></button>
-            </div>
-            <div className="p-2">
-                <p className="text-sm text-neutral/75 mb-4">Existing</p>
-                {user?.user_contacts?.length > 0 && user?.user_contacts.map(contact => {
-                    return (<div key={contact.id} className="inline-flex items-center">
-                        <span className="mr-4 p-1">{contact.phone ? 'Phone' : 'Email'}</span>
-                        <span className="p-1">{contact.phone ?? contact.email}</span>
-                        <button className="btn btn-sm btn-ghost"><i className="bx bx-trash text-error"></i></button>
-                    </div>);
-                })}
-                <hr className="my-6" />
-                <p className="text-sm text-neutral/75 mb-4">Add new</p>
-                {contactCount > 0 && [...Array(contactCount).keys()].map(i => {
-                    return (<Contact key={i} />);
-                })};
-            </div>
+            {
+                !hideContacts && <>
+                    <hr className="my-8" />
+                    <div className="flex items-center">
+                        <h4 className="text-lg font-semibold mb-4 grow">Contacts</h4>
+                        <button className="btn btn-sm btn-ghost" onClick={(e) => setContactCount(contactCount+1)}><i className="bx bx-plus text-lg"></i></button>
+                    </div>
+                    <div className="p-2">
+                        <p className="text-sm text-neutral/75 mb-4">Existing</p>
+                        {user?.user_contacts?.length > 0 && user?.user_contacts.map(contact => {
+                            return (<div key={contact.id} className="inline-flex items-center">
+                                <span className="mr-4 p-1">{contact.phone ? 'Phone' : 'Email'}</span>
+                                <span className="p-1">{contact.phone ?? contact.email}</span>
+                                <button className="btn btn-sm btn-ghost"><i className="bx bx-trash text-error"></i></button>
+                            </div>)
+                        })}
+                        <hr className="my-6" />
+                        <p className="text-sm text-neutral/75 mb-4">Add new</p>
+                        {contactCount > 0 && [...Array(contactCount).keys()].map(i => {
+                            return (<Contact key={i} />);
+                        })}
+                    </div>
+                </>
+            }
         </>
     );
 }

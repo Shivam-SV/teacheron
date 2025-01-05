@@ -26,7 +26,7 @@ export default function VerifyEmailCard() {
                         Verify your email
                     </h1>
                     <p className=" text-neutral mb-10">Check you email on your email provider and hit the link inside that email to verify your email</p>
-                    { timer > 0 ? <p className="text-base-300 countdown">Resend at <span style={{'--value': `${timer}`}}></span></p> : <Link className="btn btn-primary" href={location.href}>Resend</Link> }
+                    { timer > 0 ? <div ><p className="text-base-300 countdown">Resend at <span className='px-1' style={{'--value': `${timer}`}}></span></p></div> : <Link className="btn btn-primary" href={location.href}>Resend</Link> }
                 </div>
             </div>
         </div>

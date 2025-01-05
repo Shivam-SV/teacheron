@@ -43,7 +43,7 @@ export default function Post({ post, readonly }) {
 
     return (
         <>
-            <div className="max-w-[1000px] mx-auto border-neutral/30 shadow p-2 my-4">
+            <div className="max-w-4xl mx-auto border-neutral/30 shadow p-2 my-4">
                 <div className="mb-6">
                     <div className="flex items-center p-2 gap-1">
                         <img src={avatarImage(post.title, 'random')} alt="" className='rounded mr-4' />

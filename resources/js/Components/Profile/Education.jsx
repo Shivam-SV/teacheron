@@ -2,6 +2,7 @@ import { useForm } from "@inertiajs/react";
 import { useRef } from "react"
 import EducationForm from "./Forms/Educations";
 import { DateTime } from "luxon";
+import ModalClose from "../Elements/ModalClose";
 
 export default function Education({ user, myprofile }) {
     const formModalRef = useRef(null);
@@ -41,9 +42,9 @@ export default function Education({ user, myprofile }) {
 
             <dialog id="education-form" className="modal" ref={formModalRef}>
                 <div className="modal-box w-11/12 max-w-full">
+                    <ModalClose onPress={e => formModalRef.current.close()} />
                     <div className="flex items-center mb-4 gap-2">
                         <h3 className="font-bold flex-1">Update Your Education</h3>
-                        <button className="btn btn-sm btn-ghost" onClick={e => formModalRef.current.close()}>✕</button>
                     </div>
                     <EducationForm user={user} onSuccess={() => formModalRef.current.close()} />
                 </div>

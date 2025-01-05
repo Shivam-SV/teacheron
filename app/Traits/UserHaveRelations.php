@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\UserContact;
 use App\Models\Conversation;
 use App\Models\PostPurchase;
+use App\Models\UserDocument;
 use App\Models\UserHaveExperience;
 use App\Models\UserLoginLog;
 use App\Models\UserHaveSubject;
@@ -26,7 +27,11 @@ trait UserHaveRelations{
     }
 
     public function profile(){
-        return $this->hasOne(Media::class, 'model_id', 'id')->where('model_name', 'users')->where('model_column', 'profile');
+        return $this->singleMedia('profile');
+    }
+
+    public function timeline(){
+        return $this->singleMedia('timeline');
     }
 
     public function userSubjects(){
@@ -82,10 +87,14 @@ trait UserHaveRelations{
     }
 
     public function userPrice(){
-        return $this->userPrices()->latest()->first();
+        return $this->hasOne(UserPrice::class, 'user_id')->latest();
     }
 
     public function wishlistedUsers(){
         return $this->belongsToMany(User::class, 'wishlisted_users', 'user_id', 'wishlisted_user_id');
+    }
+
+    public function documents(){
+        return $this->hasMany(UserDocument::class, 'user_id');
     }
 }

@@ -3,6 +3,7 @@ import Education from "./Education";
 import Experience from "./Experience";
 import Subject from "./Subject";
 import Summary from "./Summary";
+import Documents from "./Documents";
 
 export default function ProfileDetail({ user, myprofile }) {
     const locationHash = window.location.hash.replace(new RegExp('[^a-bA-Z0-9]+', 'gi'), '').trim();
@@ -16,12 +17,10 @@ export default function ProfileDetail({ user, myprofile }) {
         <div className="">
             <div role="tablist" className="tabs tabs-boxed mb-2">
                 <a role="tab" className={"tab " + (tab === "Summary" ? 'tab-active' : '')} aria-label="Summary" onClick={() => updateTab("Summary")}>Summary</a>
-
                 <a role="tab" className={"tab " + (tab === "Subject" ? 'tab-active' : '')} aria-label="Subject" onClick={() => updateTab("Subject")}>Subject</a>
-
                 <a role="tab" className={"tab " + (tab === "Education" ? 'tab-active' : '')} aria-label="Education" onClick={() => updateTab("Education")}>Education</a>
-
                 <a role="tab" className={"tab " + (tab === "Experience" ? 'tab-active' : '')} aria-label="Experience" onClick={() => updateTab("Experience")}>Experience</a>
+                {myprofile && <a role="tab" className={"tab " + (tab === "Documents" ? 'tab-active' : '')} aria-label="Documents" onClick={() => updateTab("Documents")}>Documents</a>}
             </div>
 
             <div>
@@ -37,6 +36,9 @@ export default function ProfileDetail({ user, myprofile }) {
                 <div role="tabpanel" className={"tab-content " + (tab === "Experience" ? 'block' : '')}>
                     <Experience user={user} myprofile={myprofile} />
                 </div>
+                {myprofile && <div role="tabpanel" className={"tab-content " + (tab === "Documents" ? 'block' : '')}>
+                    <Documents user={user} myprofile={myprofile} />
+                </div>}
             </div>
 
         </div >

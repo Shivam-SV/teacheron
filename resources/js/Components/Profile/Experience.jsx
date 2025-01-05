@@ -1,11 +1,10 @@
 import { useRef } from "react";
 import ExperienceForm from "./Forms/Experiences";
 import { DateTime } from "luxon";
+import ModalClose from "../Elements/ModalClose";
 
 export default function Experience({ user, myprofile }) {
     const formModalRef = useRef(null);
-    console.log(user);
-
     return (
         <>
             <div className="card bg-base-100 w-100 border static">
@@ -42,9 +41,9 @@ export default function Experience({ user, myprofile }) {
 
             <dialog id="experience-form" className="modal" ref={formModalRef}>
                 <div className="modal-box w-11/12 max-w-full">
+                    <ModalClose onPress={e => formModalRef.current.close()} />
                     <div className="flex items-center mb-4 gap-2">
                         <h3 className="font-bold flex-1">Update Your Experience</h3>
-                        <button className="btn btn-sm btn-ghost" onClick={e => formModalRef.current.close()}>✕</button>
                     </div>
                     <ExperienceForm user={user} onSuccess={() => formModalRef.current.close()} />
                 </div>

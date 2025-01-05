@@ -7,10 +7,10 @@ export default function Tutor({tutor}){
     return (
         <Link className="w-[22rem] rounded-xl border-neutral/70 shadow p-4" href={route('tutor', btoa(tutor.id))}>
             <div className="flex items-center mb-2">
-                {tutor?.profile?.mediaLink ? <img src={tutor?.profile?.mediaLink} className="w-[64px] h-[64px] rounded-full" /> : <img src={avatarImage(tutor.name, 'random', 64)} alt={tutor.name} className="rounded-full mr-2" />}
+                {tutor?.profile?.mediaLink ? <img src={tutor?.profile?.mediaLink} className="w-[64px] h-[64px] rounded-full mr-2" /> : <img src={avatarImage(tutor.name, 'random', 64)} alt={tutor.name} className="rounded-full mr-2" />}
                 <div className="grow">
                     <h2 className="text-lg font-extrabold">{tutor.name}</h2>
-                    <Ratings value={3.5} />
+                    {/* <Ratings value={3.5} /> */}
                 </div>
                 <button className="tooltip mr-2" data-tip="Wishlist"><i className='bx bx-bookmark text-lg' ></i></button>
                 <button className="btn btn-sm btn-primary"><Coin price={tutor.price} /></button>

@@ -38,7 +38,7 @@ class PostController extends Controller
         return Inertia::render('Admin/Posts/View', [
             'post' => Post::with(['level', 'subjects', 'purpose', 'user', 'languagePreference'])->findOrFail(base64_decode($postId)),
             'postStatuses' => Post::getStatuses(),
-            'postActivities' => PostActivity::with(['user'])->where('post_id', base64_decode($postId))->get()
+            'postActivities' => PostActivity::with(['user'])->where('post_id', base64_decode($postId))->orderBy('created_at', 'desc')->get()
         ]);
     }
 

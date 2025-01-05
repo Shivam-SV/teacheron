@@ -7,6 +7,7 @@ import { useState } from "react";
 import { updatePageProps, updatePostPrice, updatePostStatus } from "../../../_utils/apis";
 import { usePage } from "@inertiajs/react";
 import { DateTime } from "luxon";
+import { reloadPageData } from "../../../_utils/commons";
 
 export default function ViewPost({ post, postStatuses, postActivities }) {
     const auth = usePage().props.auth;
@@ -20,7 +21,7 @@ export default function ViewPost({ post, postStatuses, postActivities }) {
         updatePostStatus(btoa(post.id), postStatusSelectRef.current.value).then(res => {
             toast[res.data.status ? 'success' : 'error'](res.data.message);
             if(res.data.status) StatusConfirmRef.current.close();
-            updatePageProps('post', 'postActivities');
+            reloadPageData(['post', 'postActivities']);
         }).catch(res => {toast.error(res.data.message)});
     }
 
@@ -30,7 +31,7 @@ export default function ViewPost({ post, postStatuses, postActivities }) {
         updatePostPrice(btoa(post.id), postPrice).then(res => {
             toast[res.data.status ?'success' : 'error'](res.data.message);
             setIsPriceUpdating(false);
-            updatePageProps('post', 'postActivities');
+            reloadPageData(['post', 'postActivities']);
         }).catch(res => {toast.error(res.data.message); setIsPriceUpdating(false);});
     }
     return (
@@ -54,7 +55,7 @@ export default function ViewPost({ post, postStatuses, postActivities }) {
                         <div className="form-control">
                             <label htmlFor="status" className="form-label">Price (in Coins)</label>
                             <form className="join" onSubmit={updatePrice}>
-                                <input type="text" className="input join-item input-bordered" defaultValue={postPrice} onChange={(e) => setPostPrice(e.target.value)} inputMode="numeric" name="price" id="price" placeholder="Price in Coins" />
+                                <input type="text" className="input w-full join-item input-bordered" defaultValue={postPrice} onChange={(e) => setPostPrice(e.target.value)} inputMode="numeric" name="price" id="price" placeholder="Price in Coins" />
                                 <button className="btn btn-primary join-item tooltip" data-tip="Update Price" disabled={isPriceUpdating} >{isPriceUpdating ? <i className="bx bx-loader bx-spin"></i> : <i className='bx bx-check text-lg'></i>} </button>
                             </form>
                         </div>

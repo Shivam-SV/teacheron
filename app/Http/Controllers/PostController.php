@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Models\PostHaveSubjects;
 use App\Http\Requests\PostRequest;
 use App\Models\PostPurchase;
+use App\Services\SearchingService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
@@ -23,10 +24,11 @@ class PostController extends Controller
 {
     protected $model = Post::class;
 
-    public function index(Request $request){
-        return inertia('Post/Index', [
-            'posts' => $this->model::with(['subjects', 'languagePreference','country', 'saves' => fn($query) => $query->where('user_id', auth()->id())])->paginate(10)
-        ]);
+    public function index(Request $request, ?string $query = null){
+        if($query === null) $posts = $this->model::with(['subjects', 'languagePreference','country', 'saves' => fn($query) => $query->where('user_id', auth()->id())])->paginate(10);
+        else $posts = SearchingService::init()->searchForPosts($query);
+
+        return inertia('Post/Index', compact('posts', 'query'));
     }
 
     public function createPost(Request $request){

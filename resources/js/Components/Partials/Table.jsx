@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { router } from "@inertiajs/react";
 
-export default function Table({ resource, placeholder, actions }) {
+export default function Table({ resource, placeholder, actions, onRowClick }) {
     const [query, setQuery] = useState({});
+    const rowclasses = onRowClick? "table-row cursor-pointer hover:bg-gray-100" : "table-row";
 
     const handleSearch = (e) => {
         setQuery({ ...query, search: e.target.value });
@@ -67,7 +68,7 @@ export default function Table({ resource, placeholder, actions }) {
                     </thead>
                     <tbody>
                         {resource?.data?.length > 0 ? resource?.data?.map((item, index) => (
-                            <tr key={index}>
+                            <tr key={index} className={rowclasses} onClick={e => {e.preventDefault(); onRowClick(item, e)}}>
                                 {
                                     resource?.columns?.length > 0 && resource?.columns?.map((column, i) => {
                                         return (column.is_action ? <td key={i}><ActionComponent actionName={column.column} row={item} /></td> : <td key={i}>{item[column.column]}</td>)

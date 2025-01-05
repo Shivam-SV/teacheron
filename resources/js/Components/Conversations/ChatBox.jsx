@@ -1,44 +1,34 @@
 import { useEffect, useState } from "react";
 import { avatarImage } from "../../_utils/commons";
 import axios from "axios";
-import { usePage } from "@inertiajs/react";
+import { usePage, usePoll } from "@inertiajs/react";
 
 export default function ChatBox({conversation}) {
-    const [messages, setMessages] = useState([]);
-    const {auth} = usePage().props;
+    const {auth, messages: defaultMessages} = usePage().props;
 
-    const loadMessages = () => {
-        axios.get(route('api.conversation.load-messages', btoa(conversation.id))).then(res => {
-            setMessages(res.data.data);
-        })
-    }
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState(defaultMessages);
+
+    usePoll(2000, {
+        onSuccess: (res) => {
+            console.log(res);
+            setMessages(() => res.props.messages);
+        }
+    });
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        const message = e.target.message.value;
         if (message.trim() === '') return;
 
         axios.post(route('api.conversation.send-message', btoa(conversation.id)), {
             message: message,
             sender_id: auth.id
         }).then(res => {
-            e.target.message.value = '';
-            loadMessages();
+            console.log("message send", res);
+            setMessage('');
         });
     }
 
-
-
-    useEffect(() => {
-        loadMessages();
-        window.Echo.private(`conversation.${conversation.id}`).listen('conversation.message', (e) => {
-            console.log(e.data);
-            loadMessages()
-        })
-        return () => {
-            setMessages([]);
-        };
-    }, []);
     return (
         <div className="flex flex-col h-full">
             <div className="bg-white py-2 px-4 shadow flex items-center">
@@ -50,7 +40,7 @@ export default function ChatBox({conversation}) {
             </div>
 
             <div className="flex-1 flex flex-col-reverse p-6 overflow-y-auto">
-                {messages?.length > 0 ? messages.map((message, index) => {
+                {messages?.data?.length > 0 ? messages?.data?.map((message, index) => {
                     if(message.sender_id === auth.id) return (
                         <div className="chat chat-end" key={index}>
                             <div className="chat-bubble text-neutral bg-neutral-content">{message.message}</div>
@@ -66,7 +56,7 @@ export default function ChatBox({conversation}) {
 
             <div>
                 <form className="bg-white p-2 shadow-lg flex items-center" onSubmit={sendMessage}>
-                    <input type="text" placeholder="Type a message" name="message" className="input bg-base-200 w-full" />
+                    <input type="text" placeholder="Type a message" autoComplete="off" required value={message} onInput={(e) => setMessage(e.target.value)} name="message" className="input bg-base-200 w-full" />
                     <button className="ml-1 btn btn-primary">
                         <i className='bx bxl-telegram text-lg'></i> Send
                     </button>

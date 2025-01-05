@@ -3,9 +3,9 @@ export default function Coin({ price, size }){
     const selectedSize = sizes[size] || sizes["lg"];
     const formatedPrice = !isNaN(parseInt(Math.abs(price).toString().split('.')[1])) ? Math.abs(price).toFixed(2) : Math.abs(price);
     return (
-        <>
-            <i class={"bx bxs-dollar-circle text-yellow-400 " + selectedSize}></i>
+        <span className="inline-flex gap-1 items-center">
+            <i className={"bx bxs-dollar-circle text-yellow-400 " + selectedSize}></i>
             {formatedPrice}
-        </>
+        </span>
     );
 }
